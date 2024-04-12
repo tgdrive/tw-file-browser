@@ -5,26 +5,23 @@ import { FileThumbnail } from "./FileThumbnail";
 import { FbIcon } from "../external/FbIcon";
 import clsx from "clsx";
 
-export type FileEntryState = {
-  childrenCount: Nullable<number>;
-  color: string;
-  icon: FbIconName | string;
-  thumbnailUrl: Nullable<string>;
-  thumbnailLoading: boolean;
-  selected: boolean;
-};
-
 export interface FileEntryPreviewProps {
   className?: string;
-  entryState: FileEntryState;
+  color: string;
+  thumbnailUrl: Nullable<string>;
+  icon: FbIconName | string;
   isDir: boolean;
 }
 
 export const GridEntryPreview = React.memo(
-  ({ className, entryState, isDir = false }: FileEntryPreviewProps) => {
-    const styles = !isDir
-      ? { backgroundColor: `${entryState.color}1F` }
-      : undefined;
+  ({
+    className,
+    color,
+    thumbnailUrl,
+    icon,
+    isDir = false,
+  }: FileEntryPreviewProps) => {
+    const styles = !isDir ? { backgroundColor: `${color}1F` } : undefined;
     return (
       <div
         className={clsx(
@@ -32,7 +29,7 @@ export const GridEntryPreview = React.memo(
           className,
         )}
       >
-        {!entryState.thumbnailUrl ? (
+        {thumbnailUrl === "" ? (
           <div
             style={styles}
             className={clsx(
@@ -42,14 +39,14 @@ export const GridEntryPreview = React.memo(
             )}
           >
             <FbIcon
-              style={{ color: entryState.color }}
-              className={clsx("size-full p-2", isDir && entryState.color)}
-              icon={entryState.icon}
+              style={{ color }}
+              className={clsx("size-full p-2", isDir && color)}
+              icon={icon}
               fixedWidth={true}
             />
           </div>
         ) : (
-          <FileThumbnail thumbnailUrl={entryState.thumbnailUrl} />
+          <FileThumbnail thumbnailUrl={thumbnailUrl!} />
         )}
       </div>
     );

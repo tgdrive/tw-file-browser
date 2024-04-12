@@ -18,9 +18,16 @@ import { FbDispatch } from "@/types/redux.types";
 import { FileHelper } from "@/util/file-helper";
 import { ColorsLight, useIconData } from "@/util/icon-helper";
 import { Logger } from "@/util/logger";
-import { FileEntryState } from "./GridEntryPreview";
 import { FbIcon } from "@/components/external/FbIcon";
 import { MouseClickEvent } from "@/components/internal/ClickableWrapper";
+
+export type FileEntryState = {
+  childrenCount: Nullable<number>;
+  color: string;
+  icon: FbIconName | string;
+  thumbnailUrl: Nullable<string>;
+  selected: boolean;
+};
 
 export const useFileEntryHtmlProps = (
   file: Nullable<FileData>,
@@ -43,7 +50,7 @@ export const useFileEntryState = (
   selected: boolean,
 ) => {
   const iconData = useIconData(file);
-  const { thumbnailUrl, thumbnailLoading } = useThumbnailUrl(file);
+  const { thumbnailUrl } = useThumbnailUrl(file);
 
   return useMemo<FileEntryState>(() => {
     const iconSpin = !file;
@@ -54,12 +61,11 @@ export const useFileEntryState = (
       icon: file && file.icon !== undefined ? file.icon : icon,
       iconSpin,
       thumbnailUrl,
-      thumbnailLoading,
       color:
         file && file.isDir ? "text-primary" : ColorsLight[iconData.colorCode],
       selected,
     };
-  }, [file, iconData, selected, thumbnailLoading, thumbnailUrl]);
+  }, [file, iconData, selected, thumbnailUrl]);
 };
 
 export const useModifierIconComponents = (file: Nullable<FileData>) => {
@@ -134,9 +140,9 @@ export const useThumbnailUrl = (file: Nullable<FileData>) => {
             if (loadingCancelled) return;
             setThumbnailLoading(false);
 
-            if (thumbnailUrl && typeof thumbnailUrl === "string") {
+            if (thumbnailUrl && typeof thumbnailUrl === "string")
               setThumbnailUrl(thumbnailUrl);
-            }
+            else setThumbnailUrl("");
           })
           .catch((error) => {
             if (!loadingCancelled) setThumbnailLoading(false);
@@ -144,9 +150,8 @@ export const useThumbnailUrl = (file: Nullable<FileData>) => {
               `User-defined "thumbnailGenerator" handler threw an error: ${error.message}`,
             );
           });
-      } else if (file.thumbnailUrl) {
-        setThumbnailUrl(file.thumbnailUrl);
-      }
+      } else if (file.thumbnailUrl) setThumbnailUrl(file.thumbnailUrl);
+      else setThumbnailUrl("");
     }
 
     return () => {
