@@ -1,6 +1,5 @@
 import type { Config } from "tailwindcss";
 import { material3 } from "@tw-material/theme";
-import { gridAreas } from "tailwindcss-grid-areas";
 
 export default {
   content: ["./**/*.{js,ts,jsx,tsx,mdx,html}"],
@@ -36,7 +35,6 @@ export default {
     },
   },
   plugins: [
-    gridAreas({}),
     material3({
       sourceColor: "#8B4E4B",
       customColors: [],

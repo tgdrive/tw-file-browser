@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  autoUpdate,
   flip,
   FloatingFocusManager,
   FloatingPortal,
@@ -17,7 +16,7 @@ import {
 } from "@floating-ui/react";
 import { createContext } from "@tw-material/react-utils";
 import { useSafeLayoutEffect } from "@nextui-org/use-safe-layout-effect";
-import type { OffsetOptions } from "@floating-ui/react-dom";
+import type { Boundary, OffsetOptions } from "@floating-ui/react-dom";
 
 export interface UsePopoverProps {
   keepMounted?: boolean;
@@ -29,6 +28,7 @@ export interface UsePopoverProps {
   triggerReference?: "triggerEl" | "virtualEl";
 
   triggerPosition?: { left: number; top: number };
+
   offset?: OffsetOptions;
 
   isOpen?: boolean;
@@ -43,7 +43,8 @@ export interface UsePopoverProps {
 }
 
 export interface PopoverProps extends UsePopoverProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  flipboundary?: Boundary | undefined;
 }
 
 export interface PopoverTriggerProps {
@@ -65,8 +66,9 @@ export function usePopover({
   triggerPosition,
   triggerReference,
   onClose,
+  flipboundary,
   offset: offsetProp,
-}: UsePopoverProps) {
+}: PopoverProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(initialOpen);
   const [labelId, setLabelId] = React.useState();
   const [descriptionId, setDescriptionId] = React.useState();
@@ -83,9 +85,14 @@ export function usePopover({
       onClose?.();
       setOpen(open);
     },
-    whileElementsMounted: autoUpdate,
     transform: false,
-    middleware: [offset(offsetProp ?? 0), flip(), shift()],
+    middleware: [
+      offset(offsetProp ?? 0),
+      flip({
+        boundary: flipboundary,
+      }),
+      shift(),
+    ],
   });
 
   const context = data.context;
@@ -211,7 +218,11 @@ export const PopoverContent = React.forwardRef<
 
   return (
     <FloatingPortal>
-      <FloatingFocusManager context={floatingContext} modal={context.modal}>
+      <FloatingFocusManager
+        context={floatingContext}
+        modal={context.modal}
+        visuallyHiddenDismiss
+      >
         <div
           ref={ref}
           className="focus:!outline-none z-50"

@@ -22,7 +22,7 @@ export const TileEntry = React.memo(({ file, selected }: FileEntryProps) => {
 
   return (
     <div
-      className="flex gap-3 items-start w-full max-h-40 p-2  rounded-lg"
+      className="flex gap-3 items-start w-full max-h-40 p-2 rounded-lg"
       {...fileEntryHtmlProps}
     >
       <div
@@ -43,8 +43,8 @@ export const TileEntry = React.memo(({ file, selected }: FileEntryProps) => {
         />
       </div>
       <div className="flex flex-col gap-2 min-w-0 truncate">
-        <FileEntryName className="text-medium truncate" file={file} />
-        <div className="inline-flex gap-2 text-small">
+        <FileEntryName className="text-base truncate" file={file} />
+        <div className="inline-flex gap-2 text-sm">
           <span>{fileModDateString}</span>
           <span>{fileSizeString}</span>
         </div>

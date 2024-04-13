@@ -1,5 +1,4 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
-import { useIntl } from "react-intl";
+import React, { ReactElement, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { reduxActions } from "@/redux/reducers";
@@ -22,7 +21,12 @@ export const FileContextMenu = React.memo(() => {
     };
   }, [dispatch]);
 
-  const intl = useIntl();
+  const elemRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!elemRef.current)
+      elemRef.current = document.querySelector("#file-browser");
+  }, []);
 
   const contextMenuConfig = useSelector(selectContextMenuConfig);
   const contextMenuItems = useSelector(selectContextMenuItems);
@@ -70,6 +74,7 @@ export const FileContextMenu = React.memo(() => {
       isOpen={!!contextMenuConfig}
       triggerReference="virtualEl"
       triggerPosition={anchorPosition}
+      flipboundary={elemRef.current!}
     >
       <PopoverContent>
         <div

@@ -21,11 +21,9 @@ export interface SmartFileEntryProps {
 
 export const SmartFileEntry = memo(
   ({ fileId, displayIndex, fileViewMode }: SmartFileEntryProps) => {
-    // Basic properties
     const file = useParamSelector(selectFileData, fileId);
     const selected = useParamSelector(selectIsFileSelected, fileId);
 
-    // Clickable wrapper properties
     const fileClickHandlers = useFileClickHandlers(file, displayIndex);
     const clickableWrapperProps = {
       className: clsx(

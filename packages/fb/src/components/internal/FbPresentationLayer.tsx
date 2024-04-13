@@ -19,9 +19,7 @@ export interface FbPresentationLayerProps {
   children?: React.ReactNode;
 }
 
-export const FbPresentationLayer: React.FC<FbPresentationLayerProps> = ({
-  children,
-}) => {
+export const FbPresentationLayer = ({ children }: FbPresentationLayerProps) => {
   const dispatch: FbDispatch = useDispatch();
   const fileActionIds = useSelector(selectFileActionIds);
   const clearSelectionOnOutsideClick = useSelector(

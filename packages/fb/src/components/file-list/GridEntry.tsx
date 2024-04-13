@@ -16,14 +16,14 @@ export const GridEntry = React.memo(({ file, selected }: FileEntryProps) => {
 
   return (
     <div className={"flex flex-col h-full p-2 gap-2"} {...fileEntryHtmlProps}>
-      <FileEntryName className="md:text-base text-sm truncate" file={file} />
+      <FileEntryName className="text-base truncate" file={file} />
       <GridEntryPreview
         icon={icon}
         color={color}
         thumbnailUrl={thumbnailUrl}
         isDir={isDir}
       />
-      <div className="inline-flex justify-between md:text-base text-sm">
+      <div className="inline-flex justify-between text-sm">
         <span>{fileModDateString}</span>
         <span>{fileSizeString}</span>
       </div>

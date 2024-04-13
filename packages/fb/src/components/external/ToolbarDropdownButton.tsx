@@ -8,7 +8,6 @@ import { useFileActionProps, useFileActionTrigger } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
 import type { PressEvent } from "@tw-material/react";
 import { Box } from "@tw-material/react";
-import { cn } from "@tw-material/theme";
 import { FbIcon } from "./FbIcon";
 import clsx from "clsx";
 type ToolbarDropdownButtonProps = {
@@ -22,7 +21,7 @@ type ToolbarDropdownButtonProps = {
 };
 
 export const ToolbarDropdownButton = (props: ToolbarDropdownButtonProps) => {
-  const { text, active, icon, onPress, hotkey } = props;
+  const { text, active, icon, onPress, hotkey, disabled } = props;
 
   return (
     <Box
@@ -30,6 +29,7 @@ export const ToolbarDropdownButton = (props: ToolbarDropdownButtonProps) => {
         "text-inherit cursor-pointer w-full flex items-center",
         "p-2 max-h-8 rounded-lg data-[hover=true]:bg-on-surface/hover outline-none",
         active && "text-primary",
+        disabled && "opacity-disabled pointer-events-none",
       )}
       onPress={onPress}
     >
@@ -57,8 +57,8 @@ export const SmartToolbarDropdownButton = (
   const { buttonName } = useLocalizedFileActionStrings(action);
 
   const handleClick = useCallback(() => {
-    triggerAction();
     onClickFollowUp?.();
+    triggerAction();
   }, [triggerAction]);
 
   if (!action) return null;
