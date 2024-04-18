@@ -44,9 +44,10 @@ export const EssentialActions = {
       } else {
         // We're dealing with a single click
 
-        const disableSelection = selectDisableSelection(getReduxState());
+        const state = getReduxState();
+        const disableSelection = selectDisableSelection(state);
         if (FileHelper.isSelectable(payload.file) && !disableSelection) {
-          if (payload.ctrlKey) {
+          if (payload.ctrlKey || state.selectionMode) {
             // Multiple selection
             reduxDispatch(
               reduxActions.toggleSelection({

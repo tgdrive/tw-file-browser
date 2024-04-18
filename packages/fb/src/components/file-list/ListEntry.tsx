@@ -55,13 +55,13 @@ export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {
         <FileEntryName className="truncate text-base" file={file} />
       </div>
 
-      <div className="text-base col-span-3 sm:col-span-1">
-        <span className="pl-0 sm:pl-[40%]">{fileModDateString}</span>
-      </div>
+      <span className="text-base col-span-3 sm:col-span-1">
+        {fileModDateString}
+      </span>
 
-      <div className="text-base col-span-3 sm:col-span-1">
-        <span className="pl-0 sm:pl-[40%]">{fileSizeString}</span>
-      </div>
+      <span className="text-base col-span-3 sm:col-span-1">
+        {fileSizeString}
+      </span>
     </div>
   );
 });
