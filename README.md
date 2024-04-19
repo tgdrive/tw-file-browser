@@ -1,2 +1,2 @@
 ## Tailwind File Browser
-Browser COmponent Used in Teldrive
+Browser Component Used in Teldrive
