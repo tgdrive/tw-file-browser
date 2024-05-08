@@ -15,7 +15,7 @@ export const FileListEmpty = () => {
   return (
     <div
       className="text-headline-medium flex gap-2 items-center absolute 
-    left-1/2 top-1/3 transform -translate-x-1/2 -translate-y-1/3"
+      left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
     >
       <FbIcon icon={FbIconName.folderOpen} />
       <span className="size-full">{emptyString}</span>

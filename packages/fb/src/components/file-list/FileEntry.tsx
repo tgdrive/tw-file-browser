@@ -28,7 +28,7 @@ export const SmartFileEntry = memo(
     const clickableWrapperProps = {
       className: clsx(
         "outline-none relative rounded-2xl",
-        "data-[view=grid]:bg-secondary-container/30 dark:data-[view=grid]:bg-surface-container-low",
+        "data-[view=grid]:bg-secondary-container/20 dark:data-[view=grid]:bg-surface-container-low",
       ),
       "data-view": fileViewMode,
       selected,

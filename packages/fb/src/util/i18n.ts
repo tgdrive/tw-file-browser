@@ -43,7 +43,6 @@ export const useLocalizedFileActionStrings = (action: Nullable<FileAction>) => {
         buttonTooltip: undefined,
       };
     }
-
     const buttonName = intl.formatMessage({
       id: getActionI18nId(action.id, "button.name"),
       defaultMessage: action.button?.name,
@@ -100,7 +99,6 @@ export const defaultFormatters: FbFormatters = {
     file: Nullable<FileData>,
   ): Nullable<string> => {
     if (!file || typeof file.size !== "number") return null;
-
     return filesize(file.size, {
       standard: "jedec",
     });
