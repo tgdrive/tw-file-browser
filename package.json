@@ -16,9 +16,9 @@
   ],
   "pnpm": {
     "overrides": {
-      "react": "^18.2.0",
-      "react-dom": "^18.2.0",
-      "tailwind-merge": "^2.2.2"
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "@types/react": "^18.3.3"
     }
   }
 }
