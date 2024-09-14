@@ -1,24 +1,19 @@
 {
-  "name": "tw-file-browser",
-  "private": true,
-  "engines": {
-    "node": ">=18.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/divyam234/tw-file-browser.git"
-  },
-  "keywords": [
-    "file",
-    "file-dialog",
-    "file-browser",
-    "react-component"
-  ],
-  "pnpm": {
-    "overrides": {
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1",
-      "@types/react": "^18.3.3"
-    }
-  }
+	"name": "tw-file-browser",
+	"private": true,
+	"engines": {
+		"node": ">=18.x"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/divyam234/tw-file-browser.git"
+	},
+	"keywords": ["file", "file-dialog", "file-browser", "react-component"],
+	"pnpm": {
+		"overrides": {
+			"react": "^18.3.1",
+			"react-dom": "^18.3.1",
+			"@types/react": "^18.3.5"
+		}
+	}
 }
