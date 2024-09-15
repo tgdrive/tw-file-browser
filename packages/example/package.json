@@ -7,7 +7,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"vite": "vite --host 0.0.0.0",
+		"vite": "vite",
 		"preview": "vite preview",
 		"build": "vite build",
 		"format": "prettier --write '**/*.{ts,tsx}'",

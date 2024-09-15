@@ -82,7 +82,7 @@ export const defaultFormatters: FbFormatters = {
 		const safeModDate = FileHelper.getModDate(file);
 		if (safeModDate) {
 			const dateOpts: FormatDateOptions = {
-				dateStyle: "short",
+				dateStyle: "medium",
 				timeStyle: "short",
 			};
 
