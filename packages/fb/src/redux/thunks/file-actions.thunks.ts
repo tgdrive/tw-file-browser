@@ -43,6 +43,7 @@ export const thunkUpdateRawFileActions =
 		rawFileActions: FileAction[] | any,
 		breakpoint: Nilable<string>,
 		disableDefaultFileActions: Nilable<boolean | string[]>,
+		disableEssentailFileActions: Nilable<boolean | string[]>,
 	): FbThunk =>
 	(dispatch) => {
 		const { sanitizedArray, errorMessages } = sanitizeInputArray(
@@ -52,21 +53,32 @@ export const thunkUpdateRawFileActions =
 
 		// Add default actions unless user disabled them
 		let defaultActionsToAdd: FileAction[];
+		let essentialActionsToAdd: FileAction[];
 		if (Array.isArray(disableDefaultFileActions)) {
 			const disabledActionIds = new Set(disableDefaultFileActions);
-			defaultActionsToAdd = [
-				...DefaultFileActions,
-				...EssentialFileActions,
-			].filter((action) => !disabledActionIds.has(action.id));
+			defaultActionsToAdd = DefaultFileActions.filter(
+				(action) => !disabledActionIds.has(action.id),
+			);
 		} else if (disableDefaultFileActions) {
 			defaultActionsToAdd = [];
 		} else {
 			defaultActionsToAdd = DefaultFileActions;
 		}
 
+		if (Array.isArray(disableEssentailFileActions)) {
+			const disabledActionIds = new Set(disableEssentailFileActions);
+			essentialActionsToAdd = EssentialFileActions.filter(
+				(action) => !disabledActionIds.has(action.id),
+			);
+		} else if (disableEssentailFileActions) {
+			essentialActionsToAdd = [];
+		} else {
+			essentialActionsToAdd = EssentialFileActions;
+		}
+
 		let fileActions = mergeFileActionsArrays(
 			sanitizedArray,
-			EssentialFileActions,
+			essentialActionsToAdd,
 			defaultActionsToAdd,
 		);
 		const optionDefaults: any = {};
