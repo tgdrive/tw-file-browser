@@ -5,7 +5,7 @@
       "@/*": ["./src/*"]
     },
     "baseUrl": ".",
-    "types": ["@types/react", "unplugin-icons/types/react"]
+    "types": ["@types/react","@react-types/shared", "unplugin-icons/types/react"]
   },
   "include": ["src"]
 }

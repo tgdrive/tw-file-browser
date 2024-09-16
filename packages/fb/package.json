@@ -1,6 +1,6 @@
 {
 	"name": "@tw-material/file-browser",
-	"version": "1.0.26",
+	"version": "1.0.27",
 	"description": "A File Browser component for React",
 	"license": "MIT",
 	"module": "dist/index.mjs",
@@ -35,7 +35,6 @@
 		"react-dom": ">=18"
 	},
 	"dependencies": {
-		"@floating-ui/react": "^0.26.23",
 		"@nextui-org/use-safe-layout-effect": "^2.0.6",
 		"@react-aria/focus": "^3.18.2",
 		"@react-aria/interactions": "^3.22.2",
@@ -63,8 +62,7 @@
 		"tsdef": "^0.0.14"
 	},
 	"devDependencies": {
-		"@floating-ui/react-dom": "^2.1.1",
-		"@iconify/json": "^2.2.248",
+		"@iconify/json": "^2.2.249",
 		"@react-types/shared": "^3.24.1",
 		"@svgr/core": "^8.1.0",
 		"@svgr/plugin-jsx": "^8.1.0",
@@ -74,7 +72,7 @@
 		"@types/fuzzy-search": "^2.1.5",
 		"@types/memoizee": "^0.4.11",
 		"@types/node": "^22.5.5",
-		"@types/react": "^18.3.5",
+		"@types/react": "^18.3.6",
 		"@types/react-dom": "^18.3.0",
 		"@types/react-redux": "^7.1.33",
 		"@types/redux-watch": "^1.1.2",

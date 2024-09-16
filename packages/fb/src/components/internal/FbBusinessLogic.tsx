@@ -8,7 +8,7 @@ import {
 	thunkUpdateDefaultFileViewActionId,
 	thunkUpdateRawFileActions,
 } from "@/redux/thunks/file-actions.thunks";
-import {
+import type {
 	FileBrowserHandle,
 	FileBrowserProps,
 } from "@/types/file-browser.types";
