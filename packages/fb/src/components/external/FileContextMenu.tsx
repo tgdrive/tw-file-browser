@@ -74,7 +74,6 @@ export const FileContextMenu = React.memo(() => {
 			isOpen={!!anchorPosition}
 			onOpenChange={hideContextMenu}
 			disableAnimation
-			offset={0}
 			classNames={{
 				content: [
 					"w-full relative flex flex-col gap-1 bg-surface-container-low ",
@@ -86,7 +85,7 @@ export const FileContextMenu = React.memo(() => {
 				<button
 					type="button"
 					style={{
-						position: "absolute",
+						position: "fixed",
 						top: anchorPosition?.top || 0,
 						left: anchorPosition?.left || 0,
 					}}
