@@ -49,7 +49,6 @@ export const ClickableWrapper = memo(
 					...focusVisibleClasses,
 					"transition-colors",
 					"data-[selected=true]:!bg-secondary-container/60",
-					"data-[hover=true]:!bg-secondary-container/60",
 					className,
 				),
 				tabIndex: 0,

@@ -11,75 +11,75 @@ import { Box } from "@tw-material/react";
 import { FbIcon } from "./FbIcon";
 import clsx from "clsx";
 type ToolbarDropdownButtonProps = {
-  text: string;
-  active?: boolean;
-  icon?: Nullable<FbIconName | string>;
-  onPress?: (event: PressEvent) => void;
-  disabled?: boolean;
-  iconOnly?: boolean;
-  hotkey?: string;
+	text: string;
+	active?: boolean;
+	icon?: Nullable<FbIconName | string>;
+	onPress?: (event: PressEvent) => void;
+	disabled?: boolean;
+	iconOnly?: boolean;
+	hotkey?: string;
 };
 
 export const ToolbarDropdownButton = (props: ToolbarDropdownButtonProps) => {
-  const { text, active, icon, onPress, hotkey, disabled } = props;
+	const { text, active, icon, onPress, hotkey, disabled } = props;
 
-  return (
-    <Box
-      className={clsx(
-        "text-inherit cursor-pointer w-full flex items-center",
-        "p-2 max-h-8 rounded-lg data-[hover=true]:bg-on-surface/hover outline-none",
-        active && "text-primary",
-        disabled && "opacity-disabled pointer-events-none",
-      )}
-      onPress={onPress}
-    >
-      {icon && <FbIcon icon={icon} className="mr-2 size-4" />}
-      <span className="flex-1 text-medium"> {text}</span>
-      {hotkey && <span className="capitalize text-xs ml-12">{hotkey}</span>}
-    </Box>
-  );
+	return (
+		<Box
+			className={clsx(
+				"text-inherit cursor-pointer w-full flex items-center",
+				"p-2 max-h-8 rounded-lg data-[hover=true]:bg-on-surface/hover outline-none",
+				active && "text-primary",
+				disabled && "opacity-disabled pointer-events-none",
+			)}
+			onPress={onPress}
+		>
+			{icon && <FbIcon icon={icon} className="mr-2 size-4" />}
+			<span className="flex-1 text-medium"> {text}</span>
+			{hotkey && <span className="capitalize text-xs ml-12">{hotkey}</span>}
+		</Box>
+	);
 };
 
 type SmartToolbarDropdownButtonProps = {
-  fileActionId: string;
-  onClickFollowUp?: () => void;
-  dropdown?: boolean;
+	fileActionId: string;
+	onClickFollowUp?: () => void;
+	dropdown?: boolean;
 };
 
 export const SmartToolbarDropdownButton = (
-  props: SmartToolbarDropdownButtonProps,
+	props: SmartToolbarDropdownButtonProps,
 ) => {
-  const { fileActionId, onClickFollowUp, dropdown } = props;
+	const { fileActionId, onClickFollowUp, dropdown } = props;
 
-  const action = useParamSelector(selectFileActionData, fileActionId);
-  const triggerAction = useFileActionTrigger(fileActionId);
-  const { icon, active, disabled } = useFileActionProps(fileActionId);
-  const { buttonName } = useLocalizedFileActionStrings(action);
+	const action = useParamSelector(selectFileActionData, fileActionId);
+	const triggerAction = useFileActionTrigger(fileActionId);
+	const { icon, active, disabled } = useFileActionProps(fileActionId);
+	const { buttonName } = useLocalizedFileActionStrings(action);
 
-  const handleClick = useCallback(() => {
-    onClickFollowUp?.();
-    triggerAction();
-  }, [triggerAction]);
+	const handleClick = useCallback(() => {
+		triggerAction();
+		onClickFollowUp?.();
+	}, [triggerAction]);
 
-  if (!action) return null;
-  const { button } = action;
-  if (!button) return null;
-  if (
-    (action.customVisibility !== undefined &&
-      action.customVisibility() === CustomVisibilityState.Hidden) ||
-    (disabled && !dropdown)
-  )
-    return null;
+	if (!action) return null;
+	const { button } = action;
+	if (!button) return null;
+	if (
+		(action.customVisibility !== undefined &&
+			action.customVisibility() === CustomVisibilityState.Hidden) ||
+		(disabled && !dropdown)
+	)
+		return null;
 
-  return (
-    <ToolbarDropdownButton
-      text={buttonName}
-      icon={icon}
-      iconOnly={button.iconOnly}
-      onPress={handleClick}
-      active={active}
-      hotkey={!dropdown ? action.hotkeys?.[0] : ""}
-      disabled={disabled}
-    />
-  );
+	return (
+		<ToolbarDropdownButton
+			text={buttonName}
+			icon={icon}
+			iconOnly={button.iconOnly}
+			onPress={handleClick}
+			active={active}
+			hotkey={!dropdown ? action.hotkeys?.[0] : ""}
+			disabled={disabled}
+		/>
+	);
 };

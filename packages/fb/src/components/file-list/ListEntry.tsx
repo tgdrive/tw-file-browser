@@ -34,7 +34,7 @@ export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {
 			)}
 			{...fileEntryHtmlProps}
 		>
-			<div className="self-center inline-flex items-center gap-2 col-span-6  sm:col-span-4">
+			<div className="self-center inline-flex items-center gap-2 col-span-6 sm:col-span-3">
 				<div
 					className={clsx(
 						"size-8 grid rounded-lg shrink-0",
@@ -52,14 +52,14 @@ export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {
 						fixedWidth={true}
 					/>
 				</div>
-				<FileEntryName className="truncate text-base" file={file} />
+				<FileEntryName className="truncate" file={file} />
 			</div>
 
-			<span className="text-base col-span-4 sm:col-span-1">
+			<span className="col-span-4 sm:col-span-2 sm:pl-[10%] md:pl-[25%]">
 				{fileModDateString}
 			</span>
 
-			<span className="text-base col-span-2 sm:col-span-1">
+			<span className="col-span-2 sm:col-span-1">
 				{fileSizeString || "0 B"}
 			</span>
 		</div>
