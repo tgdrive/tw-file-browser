@@ -150,6 +150,7 @@ export const ExtraActions = {
   RenameFile: defineFileAction({
     id: "rename_file",
     requiresSelection: true,
+    hotkeys: ["f2"],
     button: {
       name: "Rename",
       contextMenu: true,
