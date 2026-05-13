@@ -4,8 +4,7 @@ import { selectSelectionMode, selectSelectionSize } from "@/redux/selectors";
 import { reduxActions } from "@/redux/reducers";
 import { FbDispatch } from "@/types/redux.types";
 import { FbIconName } from "@/util/enums";
-import { Button } from "@tw-material/react";
-import { cn } from "@tw-material/theme";
+import { Button } from "@heroui/react";
 import { FbIcon } from "./FbIcon";
 import clsx from "clsx";
 
@@ -29,17 +28,15 @@ export const ToolbarInfo = React.memo(({ className }: ToolbarInfoProps) => {
     <div
       className={clsx(
         "inline-flex items-center gap-2",
-        !enabled && "text-on-surface/[0.38] pointer-events-none",
+        !enabled && "text-muted/[0.38] pointer-events-none",
         className,
       )}
     >
       <>
         <Button
           size="sm"
-          classNames={{
-            base: "text-inherit",
-          }}
-          variant="text"
+          className="text-inherit"
+          variant="tertiary"
           isIconOnly
           onPress={clearSelection}
         >

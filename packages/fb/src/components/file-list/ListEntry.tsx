@@ -38,7 +38,7 @@ export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {
 				<div
 					className={clsx(
 						"size-8 grid rounded-lg shrink-0",
-						isDir && "bg-primary/focus",
+						isDir && "bg-accent/20",
 					)}
 					style={styles}
 				>

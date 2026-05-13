@@ -35,7 +35,7 @@ export const GridEntryPreview = React.memo(
             className={clsx(
               "absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 size-14",
               "rounded-lg",
-              isDir && "bg-primary/focus",
+              isDir && "bg-accent/20",
             )}
           >
             <FbIcon

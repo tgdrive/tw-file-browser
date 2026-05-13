@@ -3,7 +3,7 @@ import { FileActionGroup } from "@/types/action-menus.types";
 import { useLocalizedFileActionGroup } from "@/util/i18n";
 import { ToolbarButton, ToolbarButtonProps } from "./ToolbarButton";
 import { SmartToolbarDropdownButton } from "./ToolbarDropdownButton";
-import { Popover, PopoverTrigger, PopoverContent } from "@tw-material/react";
+import { Popover } from "@heroui/react";
 import { FocusScope } from "@react-aria/focus";
 
 export type ToolbarDropdownProps = FileActionGroup;
@@ -44,16 +44,16 @@ export const ToolbarDropdown = React.memo((props: ToolbarDropdownProps) => {
     <Popover
       onOpenChange={(open) => setOpen(open)}
       isOpen={open}
-      placement="bottom-end"
     >
-      <PopoverTrigger>
-        <ToolbarButton {...toolbarButtonProps} />
-      </PopoverTrigger>
-      <PopoverContent className="w-full relative flex flex-col gap-1 p-1 bg-surface-container text-on-surface rounded-lg">
+      <ToolbarButton {...toolbarButtonProps} />
+      <Popover.Content
+        className="w-full relative flex flex-col gap-1 p-1 bg-surface text-foreground rounded-lg"
+        placement="bottom end"
+      >
         <FocusScope contain restoreFocus>
           {menuItemComponents}
         </FocusScope>
-      </PopoverContent>
+      </Popover.Content>
     </Popover>
   );
 });

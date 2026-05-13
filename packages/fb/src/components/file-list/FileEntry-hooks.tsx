@@ -62,7 +62,7 @@ export const useFileEntryState = (
       iconSpin,
       thumbnailUrl,
       color:
-        file && file.isDir ? "text-primary" : ColorsLight[iconData.colorCode],
+        file && file.isDir ? "text-accent" : ColorsLight[iconData.colorCode],
       selected,
     };
   }, [file, iconData, selected, thumbnailUrl]);

@@ -6,3 +6,4 @@ dist
 lib
 .pnp.*
 .yarn
+bun.lock

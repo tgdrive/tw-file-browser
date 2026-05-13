@@ -4,8 +4,8 @@ export const scrollbarClasses = `[&::-webkit-scrollbar]:w-2
 export const focusVisibleClasses = [
   "data-[focus-visible=true]:z-10",
   "data-[focus-visible=true]:outline-[3px]",
-  "data-[focus-visible=true]:outline-secondary",
+  "data-[focus-visible=true]:outline-accent",
   "data-[focus-visible=true]:outline-offset-2",
-  "data-[focus-visible=true]:shadow-1",
-  "data-[focus-visible=true]:bg-primary/focus",
+  "data-[focus-visible=true]:shadow-sm",
+  "data-[focus-visible=true]:bg-accent/20",
 ];

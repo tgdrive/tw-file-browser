@@ -4,8 +4,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "baseUrl": ".",
-    "types": ["@types/react","@react-types/shared", "unplugin-icons/types/react"]
+    "types": ["@types/react","@react-types/shared", "unplugin-icons/types/react"],
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }

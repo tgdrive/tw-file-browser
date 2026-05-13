@@ -28,7 +28,7 @@ export const TileEntry = React.memo(({ file, selected }: FileEntryProps) => {
 			<div
 				className={clsx(
 					"size-10 shrink-0 grid rounded-lg",
-					isDir && "bg-primary/focus",
+					isDir && "bg-accent/20",
 				)}
 				style={styles}
 			>

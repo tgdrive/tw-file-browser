@@ -22,6 +22,6 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["packages", "tailwind.config.ts"],
+  "include": ["packages"],
   "exclude": ["**/node_modules", "**/dist"]
 }

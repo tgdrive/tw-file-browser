@@ -21,12 +21,11 @@ export const FolderChainButton = memo(
 		return (
 			<ToolbarButton
 				icon={icon}
-				className="bg-surface-container-high data-[hover=true]:bg-on-surface-variant/hover [&>span]:truncate max-w-32 min-w-0 px-2"
+				className="bg-surface-tertiary hover:bg-default [&>span]:truncate max-w-32 min-w-0 px-2"
 				text={text}
-				variant="text"
+				variant="tertiary"
 				size="sm"
-				disableRipple
-				disabled={disabled}
+				isDisabled={disabled}
 				onPress={onClick}
 			/>
 		);

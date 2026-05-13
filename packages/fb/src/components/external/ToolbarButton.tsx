@@ -6,7 +6,7 @@ import { useParamSelector } from "@/redux/store";
 import { FbIconName, CustomVisibilityState } from "@/util/enums";
 import { useFileActionProps, useFileActionTrigger } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
-import { Button, type ButtonProps } from "@tw-material/react";
+import { Button, type ButtonProps } from "@heroui/react";
 import { FbIcon } from "./FbIcon";
 import clsx from "clsx";
 
@@ -18,6 +18,7 @@ export type ToolbarButtonProps = {
   icon?: Nullable<FbIconName | string>;
   iconOnly?: boolean;
   dropdown?: boolean;
+  isDisabled?: boolean;
 } & Omit<ButtonProps, "ref">;
 
 export const ToolbarButton = memo(
@@ -30,7 +31,7 @@ export const ToolbarButton = memo(
         active,
         icon,
         iconOnly,
-        disabled,
+        isDisabled,
         dropdown,
         ...props
       },
@@ -46,24 +47,21 @@ export const ToolbarButton = memo(
       return (
         <Button
           ref={ref}
-          variant="text"
+          variant="tertiary"
           className={clsx(
             "[&>svg]:size-5",
-            !disabled && "text-inherit ",
+            !isDisabled && "text-inherit",
             className,
           )}
-          title={tooltip ? tooltip : text}
-          isDisabled={disabled}
+          isDisabled={isDisabled}
           isIconOnly={iconOnly}
-          startContent={
-            dropdown && text && !iconOnly ? (
-              <FbIcon icon={FbIconName.dropdown} fixedWidth={true} />
-            ) : undefined
-          }
+          aria-label={tooltip ? tooltip : text}
           {...props}
         >
-          {iconOnly && iconComponent}
-          {text && !iconOnly && <span>{text}</span>}
+          {dropdown && text && !iconOnly ? (
+            <FbIcon icon={FbIconName.dropdown} fixedWidth={true} />
+          ) : null}
+          {iconOnly ? iconComponent : text ? <span>{text}</span> : null}
         </Button>
       );
     },
@@ -101,7 +99,7 @@ export const SmartToolbarButton = memo(
         active={active}
         {...props}
         onPress={triggerAction}
-        disabled={disabled}
+        isDisabled={disabled}
       />
     );
   },

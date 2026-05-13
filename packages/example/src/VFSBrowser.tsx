@@ -8,7 +8,7 @@ import {
 	FileHelper,
 	FullFileBrowser,
 	defineFileAction,
-} from "@tw-material/file-browser";
+} from "file-browser";
 import React, {
 	useCallback,
 	useEffect,

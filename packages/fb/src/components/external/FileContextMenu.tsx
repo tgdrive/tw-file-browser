@@ -10,8 +10,7 @@ import {
 import { useContextMenuDismisser } from "./FileContextMenu-hooks";
 import { SmartToolbarDropdownButton } from "./ToolbarDropdownButton";
 import type { FbDispatch } from "@/types/redux.types";
-import { Popover, PopoverContent, PopoverTrigger } from "@tw-material/react";
-import { Drawer } from "vaul";
+import { Popover } from "@heroui/react";
 import { useMediaQuery } from "@react-hook/media-query";
 
 export const FileContextMenu = React.memo(() => {
@@ -72,62 +71,39 @@ export const FileContextMenu = React.memo(() => {
 
 	const sm = useMediaQuery("only screen and (max-width: 475px)");
 
-	const renderDrawer = () => {
+	const renderMenu = () => {
 		if (!contextMenuConfig) return null;
-		if (sm) {
-			return (
-				<Drawer.Root open={!!anchorPosition} onOpenChange={hideContextMenu}>
-					<Drawer.Trigger asChild>
-						<button
-							type="button"
-							style={{
-								position: "fixed",
-								top: anchorPosition?.top || 0,
-								left: anchorPosition?.left || 0,
-							}}
-						/>
-					</Drawer.Trigger>
-					<Drawer.Portal>
-						<Drawer.Overlay className="fixed inset-0 bg-black/40" />
-						<Drawer.Content className="bg-surface-container-low flex flex-col rounded-t-[10px] mt-24 fixed bottom-0 left-0 right-0">
-							<div className="p-4 rounded-t-[10px] flex-1">
-								<div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-on-surface-variant mb-4" />
-								<div className="max-w-md mx-auto">
-									{contextMenuItemComponents}
-								</div>
-							</div>
-						</Drawer.Content>
-					</Drawer.Portal>
-				</Drawer.Root>
-			);
-		}
+
 		return (
 			<Popover
-				placement="bottom-start"
 				isOpen={!!anchorPosition}
-				onOpenChange={hideContextMenu}
-				disableAnimation
-				classNames={{
-					content: [
-						"w-full relative flex flex-col gap-1 bg-surface-container-low ",
-						"text-on-surface rounded-lg shadow-1 p-1",
-					],
+				onOpenChange={(open) => {
+					if (!open) hideContextMenu();
 				}}
 			>
-				<PopoverTrigger>
-					<button
-						type="button"
-						style={{
-							position: "fixed",
-							top: anchorPosition?.top || 0,
-							left: anchorPosition?.left || 0,
-						}}
-					/>
-				</PopoverTrigger>
-				<PopoverContent>{contextMenuItemComponents}</PopoverContent>
+				<button
+					type="button"
+					style={{
+						position: "fixed",
+						top: anchorPosition?.top || 0,
+						left: anchorPosition?.left || 0,
+						width: 0,
+						height: 0,
+						opacity: 0,
+					}}
+					aria-hidden="true"
+				/>
+				<Popover.Content
+					className="w-full relative flex flex-col gap-1 bg-surface text-foreground rounded-lg shadow-overlay p-1"
+					placement={sm ? "bottom" : "bottom start"}
+				>
+					<Popover.Dialog>
+						{contextMenuItemComponents}
+					</Popover.Dialog>
+				</Popover.Content>
 			</Popover>
 		);
 	};
 
-	return renderDrawer();
+	return renderMenu();
 });
