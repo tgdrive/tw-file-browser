@@ -145,6 +145,19 @@ export const FileGrid = memo(() => {
 
   const isList = viewMode === FileViewMode.List;
 
+  // Grid layout options (must be before early returns — hooks rule)
+  const gridLayoutOptions = useMemo(
+    () => ({
+      minItemSize: new Size(
+        viewMode === FileViewMode.Grid ? 180 : 200,
+        180,
+      ),
+      maxColumns: 12,
+      minSpace: new Size(8, 8),
+    }),
+    [viewMode],
+  );
+
   // Empty state
   if (items.length === 0) {
     return (
@@ -185,18 +198,6 @@ export const FileGrid = memo(() => {
   }
 
   // ---- Grid / Tile view: GridList + Virtualizer GridLayout ----
-  const gridLayoutOptions = useMemo(
-    () => ({
-      minItemSize: new Size(
-        viewMode === FileViewMode.Grid ? 180 : 200,
-        180,
-      ),
-      maxColumns: 12,
-      minSpace: new Size(8, 8),
-    }),
-    [viewMode],
-  );
-
   return (
     <div className="size-full pl-2 pb-2 rounded-b-3xl">
       <Virtualizer layout={GridLayout} layoutOptions={gridLayoutOptions}>
