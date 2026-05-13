@@ -1,5 +1,5 @@
 import React from "react";
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 import { FbIconName } from "@/util/enums";
 import { FileThumbnail } from "./file-thumbnail";
 import { FbIcon } from "../shared/fb-icon";
@@ -25,7 +25,7 @@ export const GridEntryPreview = React.memo(
     return (
       <div
         className={clsx(
-          "flex-grow bg-surface aspect-[16/10] relative overflow-hidden rounded-lg",
+          "grow bg-surface aspect-16/10 relative overflow-hidden rounded-lg",
           className,
         )}
       >

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 
 import { FbActions } from "@/action-definitions/index";
 import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";

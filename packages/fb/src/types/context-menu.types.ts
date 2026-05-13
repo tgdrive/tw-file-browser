@@ -1,4 +1,4 @@
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 
 export interface ContextMenuConfig {
   triggerFileId: Nullable<string>;

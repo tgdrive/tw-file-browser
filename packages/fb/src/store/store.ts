@@ -12,7 +12,7 @@ import {
 import type { StoreApi } from "zustand";
 import { sort } from "fast-sort";
 import FuzzySearch from "fuzzy-search";
-import { Nilable, Nullable } from "@/util/ts-types";
+import { Nilable, Nullable } from "@/util/utils";
 import type {
   GenericFileActionHandler, FileActionData, FileActionState,
 } from "@/types/action-handler.types";

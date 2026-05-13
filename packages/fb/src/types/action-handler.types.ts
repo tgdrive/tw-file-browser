@@ -1,4 +1,4 @@
-import { AnyObject, Nullable } from "@/util/ts-types";
+import { AnyObject, Nullable } from "@/util/utils";
 
 import { FileAction } from "./action.types";
 import { FileData } from "./file.types";

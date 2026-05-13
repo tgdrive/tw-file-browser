@@ -4,7 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 
 import { useFbStore } from "@/store/store";
 import { FileData } from "@/types/file.types";

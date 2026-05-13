@@ -11,7 +11,7 @@ import { ListBox } from "@heroui/react";
 
 import { FbActions } from "@/action-definitions/index";
 import { FileViewMode } from "@/util/enums";
-import type { Nullable } from "@/util/ts-types";
+import type { Nullable } from "@/util/utils";
 import type { FileData } from "@/types/file.types";
 import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 

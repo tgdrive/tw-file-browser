@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Nullable } from "@/util/ts-types";
+import type { Nullable } from "@/util/utils";
 
 import { FbActions } from "@/action-definitions/index";
 import { useFbStore, useFbStoreApi } from "@/store/store";

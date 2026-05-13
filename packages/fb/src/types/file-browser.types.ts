@@ -1,4 +1,4 @@
-import { Nilable, Nullable } from "@/util/ts-types";
+import { Nilable, Nullable } from "@/util/utils";
 import { FbActions } from "@/action-definitions/index";
 import { GenericFileActionHandler } from "./action-handler.types";
 import { FileAction } from "./action.types";

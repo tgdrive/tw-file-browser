@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import type { Nullable } from "@/util/ts-types";
+import type { Nullable } from "@/util/utils";
 
 import { FbIconName, CustomVisibilityState } from "@/util/enums";
 import { useFbStore, useShallow } from "@/store/store";

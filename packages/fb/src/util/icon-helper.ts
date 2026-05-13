@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import ExactTrie from "exact-trie";
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 
 import { FileData } from "@/types/file.types";
 import { FbIconName } from "./enums";

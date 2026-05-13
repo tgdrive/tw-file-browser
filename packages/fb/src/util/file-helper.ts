@@ -1,4 +1,4 @@
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 
 import { FileData } from "@/types/file.types";
 import { Logger } from "./logger";

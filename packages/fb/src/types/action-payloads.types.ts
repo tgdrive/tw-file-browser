@@ -1,4 +1,4 @@
-import { Nullable } from "@/util/ts-types";
+import { Nullable } from "@/util/utils";
 
 import { FileArray, FileData } from "./file.types";
 
