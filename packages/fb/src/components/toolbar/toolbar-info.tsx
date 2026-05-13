@@ -32,14 +32,13 @@ export const ToolbarInfo = React.memo(({ className }: ToolbarInfoProps) => {
       <>
         <Button
           size="sm"
-          className="text-inherit"
-          variant="tertiary"
+          variant="ghost"
           isIconOnly
           onPress={handleClearSelection}
         >
           <FbIcon icon={FbIconName.cross} fixedWidth={true} />
         </Button>
-        <p className="text-inherit text-label-large text-nowrap w-24">
+        <p className="text-nowrap">
           {`${selectionSize} selected`}
         </p>
       </>

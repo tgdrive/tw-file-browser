@@ -1,6 +1,7 @@
 import type { FileSelectionTransform } from "@/types/action.types";
 import { defineFileAction } from "@/util/helpers";
 import { FbIconName, FileViewMode } from "@/util/enums";
+import { FileHelper } from "@/util/file-helper";
 import { EssentialActions } from "./essential";
 
 export const DefaultActions = {
@@ -11,7 +12,7 @@ export const DefaultActions = {
     {
       id: "open_selection",
       hotkeys: ["enter"],
-      target: { source: "selection-or-context-item", min: 1, filter: (file) => !!file?.openable },
+      target: { source: "selection-or-context-item", min: 1, filter: (file) => FileHelper.isOpenable(file) },
       ui: {
         name: "Open selection",
         toolbar: true,
@@ -23,6 +24,8 @@ export const DefaultActions = {
     ({ state, getStore }) => {
       getStore().getState().actions.requestFileAction(EssentialActions.OpenFiles, {
         files: state.selectedFilesForAction!,
+      }, {
+        triggerFileId: state.contextMenuTriggerFile?.id ?? null,
       });
       return undefined;
     },

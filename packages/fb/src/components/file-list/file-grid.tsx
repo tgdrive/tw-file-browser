@@ -119,6 +119,8 @@ export const FileGrid = memo(() => {
       if (event.button !== 0) return;
       const target = event.target as HTMLElement;
       if (target.closest("[data-file-id]")) return;
+      event.preventDefault();
+      event.stopPropagation();
       storeApi.getState().actions.clearSelection();
     },
     [storeApi],

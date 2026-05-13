@@ -1,9 +1,8 @@
-import React, { type ReactElement, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useFbStore } from "@/store/store";
 import { SmartToolbarButton } from "./toolbar-button";
 import { ToolbarDropdown } from "./toolbar-dropdown";
 import { ToolbarInfo } from "./toolbar-info";
-import { Toolbar as HeroToolbar } from "@heroui/react";
 import clsx from "clsx";
 
 interface FileToolbarProps {
@@ -13,29 +12,25 @@ interface FileToolbarProps {
 export const FileToolbar = ({ className }: FileToolbarProps) => {
   const toolbarItems = useFbStore((s) => s.state.toolbarItems);
 
-  const toolbarItemComponents = useMemo(() => {
-    const components: ReactElement[] = [];
-    for (let i = 0; i < toolbarItems.length; ++i) {
-      const item = toolbarItems[i];
-
-      const key = `toolbar-item-${typeof item === "string" ? item : item.name}`;
-      const component =
-        typeof item === "string" ? (
+  const toolbarItemComponents = useMemo(
+    () =>
+      toolbarItems.map((item) => {
+        const key = `toolbar-item-${typeof item === "string" ? item : item.name}`;
+        return typeof item === "string" ? (
           <SmartToolbarButton key={key} fileActionId={item} />
         ) : (
           <ToolbarDropdown key={key} {...item} />
         );
-      components.push(component);
-    }
-    return components;
-  }, [toolbarItems]);
+      }),
+    [toolbarItems],
+  );
 
   return (
-    <HeroToolbar
-      className={clsx("px-2 min-h-max flex items-center", className)}
+    <div
+      className={clsx("flex flex-wrap items-center gap-1 px-2 min-h-max", className)}
     >
       <ToolbarInfo />
       {toolbarItemComponents}
-    </HeroToolbar>
+    </div>
   );
 };

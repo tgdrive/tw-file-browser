@@ -98,6 +98,10 @@ export type FileActionStep =
   | { type: "sort"; keySelector: FileSortKeySelector; actionId?: string; defaultOrder?: "ASC" | "DESC" }
   | { type: "transform-selection"; transform: FileSelectionTransform };
 
+export interface FileActionInvocationContext {
+  triggerFileId?: Nullable<string>;
+}
+
 export type FileSelectionTransform = (data: {
   prevSelection: Set<string>;
   fileIds: ReadonlyArray<string>;

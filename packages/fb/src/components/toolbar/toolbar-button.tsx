@@ -1,4 +1,4 @@
-import React, { forwardRef, memo } from "react";
+import React, { memo } from "react";
 import type { Nullable } from "@/util/ts-types";
 
 import { FbIconName, CustomVisibilityState } from "@/util/enums";
@@ -21,48 +21,42 @@ export type ToolbarButtonProps = {
 } & Omit<ButtonProps, "ref">;
 
 export const ToolbarButton = memo(
-  forwardRef<HTMLButtonElement, ToolbarButtonProps>(
-    (
-      {
-        className,
-        text,
-        tooltip,
-        active,
-        icon,
-        iconOnly,
-        isDisabled,
-        dropdown,
-        ...props
-      },
-      ref,
-    ) => {
-      const iconComponent =
-        icon || iconOnly ? (
-          <FbIcon
-            icon={icon ? icon : FbIconName.fallbackIcon}
-            fixedWidth={true}
-          />
-        ) : null;
-      return (
-        <Button
-          ref={ref}
-          variant="ghost"
-          className={clsx(
-            className,
-          )}
-          isDisabled={isDisabled}
-          isIconOnly={iconOnly}
-          aria-label={tooltip ? tooltip : text}
-          {...props}
-        >
-          {dropdown && text && !iconOnly ? (
-            <FbIcon icon={FbIconName.dropdown} fixedWidth={true} />
-          ) : null}
-          {iconOnly ? iconComponent : text ? <span>{text}</span> : null}
-        </Button>
-      );
-    },
-  ),
+  ({
+    className,
+    text,
+    tooltip,
+    active,
+    icon,
+    iconOnly,
+    isDisabled,
+    dropdown,
+    ...props
+  }: ToolbarButtonProps) => {
+    const iconComponent =
+      icon || iconOnly ? (
+        <FbIcon
+          icon={icon ? icon : FbIconName.fallbackIcon}
+          fixedWidth={true}
+        />
+      ) : null;
+    return (
+      <Button
+        variant="ghost"
+        className={clsx(
+          className,
+        )}
+        isDisabled={isDisabled}
+        isIconOnly={iconOnly}
+        aria-label={tooltip ? tooltip : text}
+        {...props}
+      >
+        {dropdown && text && !iconOnly ? (
+          <FbIcon icon={FbIconName.dropdown} fixedWidth={true} />
+        ) : null}
+        {iconOnly ? iconComponent : text ? <span>{text}</span> : null}
+      </Button>
+    );
+  },
 );
 
 export interface SmartToolbarButtonProps {

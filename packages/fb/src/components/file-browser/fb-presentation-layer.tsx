@@ -79,6 +79,17 @@ export const FbPresentationLayer = ({
           if (matched) {
             e.preventDefault();
             e.stopPropagation();
+            const state = storeApi.getState().state;
+            const selectedFiles = Object.keys(state.selectionMap).map((fid) => state.fileMap[fid]).filter(Boolean);
+            const triggerFileId = state.contextMenuConfig?.triggerFileId ?? null;
+            const triggerFile = triggerFileId ? state.fileMap[triggerFileId] ?? null : null;
+            let targetFiles = selectedFiles;
+            if (action.target?.source === "context-item") targetFiles = triggerFile ? [triggerFile] : [];
+            else if (action.target?.source === "selection-or-context-item") targetFiles = selectedFiles.length > 0 ? selectedFiles : (triggerFile ? [triggerFile] : []);
+            else if (action.target?.source === "none") targetFiles = [];
+            const filteredTargets = action.target?.filter ? targetFiles.filter(action.target.filter) : targetFiles;
+            const minTarget = action.target?.min ?? 0;
+            if (minTarget > 0 && filteredTargets.length < minTarget) return;
             storeApi.getState().actions.requestFileAction(action, undefined);
             return;
           }

@@ -10,7 +10,7 @@ import { FbIcon } from "../shared/fb-icon";
 const ContextMenuItemContent = memo(
   ({ fileActionId }: { fileActionId: string }) => {
     const action = useFbStore((s) => s.state.fileActionMap[fileActionId]);
-    const { icon } = useFileActionProps(fileActionId);
+    const { icon, disabled } = useFileActionProps(fileActionId);
     const { actionName } = useLocalizedFileActionStrings(action);
     const hotkey = action?.hotkeys?.[0];
 
@@ -18,7 +18,7 @@ const ContextMenuItemContent = memo(
     if (!ui?.contextMenu) return null;
 
     return (
-      <Dropdown.Item id={fileActionId} textValue={actionName}>
+      <Dropdown.Item id={fileActionId} textValue={actionName} isDisabled={disabled}>
         {icon && <FbIcon icon={icon} className="size-4 shrink-0 text-muted" />}
         <Label>{actionName}</Label>
         {hotkey && (
@@ -72,7 +72,9 @@ export const FileContextMenu = memo(() => {
   const handleAction = (key: React.Key) => {
     const fileAction = fileActionMap[key as string];
     if (fileAction) {
-      storeApi.getState().actions.requestFileAction(fileAction, undefined);
+      storeApi.getState().actions.requestFileAction(fileAction, undefined, {
+        triggerFileId: contextMenuConfig?.triggerFileId ?? null,
+      });
     }
     hideContextMenu();
   };

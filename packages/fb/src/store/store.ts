@@ -17,7 +17,7 @@ import type {
   GenericFileActionHandler, FileActionData, FileActionState,
 } from "@/types/action-handler.types";
 import type { ActionGroup, FileActionGroup, FileActionMenuItem } from "@/types/action-menus.types";
-import type { FileAction, FileActionMap, FileSelectionTransform } from "@/types/action.types";
+import type { FileAction, FileActionInvocationContext, FileActionMap, FileSelectionTransform } from "@/types/action.types";
 import type { ContextMenuConfig } from "@/types/context-menu.types";
 import type { FileArray, FileData, FileFilter, FileIdTrueMap, FileMap } from "@/types/file.types";
 import type { FileViewConfig } from "@/types/file-view.types";
@@ -116,7 +116,7 @@ export interface FbActions {
   updateDefaultFileViewActionId: (id: Nilable<string>) => void;
   activateSortAction: (id: Nilable<string>, order?: SortOrder) => void;
   applySelectionTransform: (t: FileSelectionTransform) => void;
-  requestFileAction: <A extends FileAction>(a: A, p: A["__payloadType"]) => void;
+  requestFileAction: <A extends FileAction>(a: A, p: A["__payloadType"], c?: FileActionInvocationContext) => void;
 }
 
 // ============================================================
@@ -187,9 +187,9 @@ const mergeActions = (...arrays: FileAction[][]): FileAction[] => {
 
 const getActionUi = (action: FileAction) => action.ui;
 
-const resolveActionSelection = (action: FileAction, s: FbState) => {
+const resolveActionSelection = (action: FileAction, s: FbState, context?: FileActionInvocationContext) => {
   const selectedFiles = Object.keys(s.selectionMap).map((id) => s.fileMap[id]).filter(Boolean);
-  const tfId = s.contextMenuConfig?.triggerFileId ?? null;
+  const tfId = context?.triggerFileId ?? s.contextMenuConfig?.triggerFileId ?? null;
   const triggerFile = tfId ? s.fileMap[tfId] ?? null : null;
 
   if (action.target) {
@@ -434,12 +434,12 @@ export const createFbStore = (instanceId: string) => {
           else get().actions.selectFiles({ fileIds: Array.from(result), reset: true });
         },
 
-        requestFileAction(action, payload) {
+        requestFileAction(action, payload, context) {
           const s = get().state;
           const a = get().actions;
           if (!s.fileActionMap[action.id]) Logger.warn(`Action "${action.id}" requested but not registered.`);
 
-          const { selectedFiles, selectedFilesForAction, triggerFile, targetMin, targetMax } = resolveActionSelection(action, s);
+          const { selectedFiles, selectedFilesForAction, triggerFile, targetMin, targetMax } = resolveActionSelection(action, s, context);
           if (action.target && selectedFilesForAction.length === 0 && (action.target.min ?? 0) > 0) { Logger.warn(`Action "${action.id}" requires selection but none found.`); return; }
           if (targetMin !== undefined && selectedFilesForAction.length < targetMin) { Logger.warn(`Action "${action.id}" requires at least ${targetMin} target file(s).`); return; }
           if (targetMax !== undefined && selectedFilesForAction.length > targetMax) { Logger.warn(`Action "${action.id}" supports at most ${targetMax} target file(s).`); return; }
