@@ -1,25 +1,20 @@
 import React, {
   HTMLProps,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Nullable, Undefinable } from "tsdef";
 
-import { FbActions } from "@/action-definitions/index";
 import { selectThumbnailGenerator } from "@/redux/selectors";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
 import { FileData } from "@/types/file.types";
 import { FbIconName } from "@/util/enums";
-import { FbDispatch } from "@/types/redux.types";
 import { FileHelper } from "@/util/file-helper";
 import { ColorsLight, useIconData } from "@/util/icon-helper";
 import { Logger } from "@/util/logger";
 import { FbIcon } from "@/components/external/fb-icon";
-import { MouseClickEvent } from "@/components/internal/clickable-wrapper";
 
 export type FileEntryState = {
   childrenCount: Nullable<number>;
@@ -160,44 +155,4 @@ export const useThumbnailUrl = (file: Nullable<FileData>) => {
   }, [file, setThumbnailUrl, setThumbnailLoading, thumbnailGenerator]);
 
   return { thumbnailUrl, thumbnailLoading };
-};
-
-export const useFileClickHandlers = (
-  file: Nullable<FileData>,
-  displayIndex: number,
-) => {
-  const dispatch: FbDispatch = useDispatch();
-
-  const onMouseClick = useCallback(
-    (event: MouseClickEvent, clickType: "single" | "double") => {
-      if (!file) return;
-
-      dispatch(
-        thunkRequestFileAction(FbActions.MouseClickFile, {
-          clickType,
-          file,
-          fileDisplayIndex: displayIndex,
-          altKey: event.altKey,
-          ctrlKey: event.ctrlKey,
-          shiftKey: event.shiftKey,
-        }),
-      );
-    },
-    [dispatch, file, displayIndex],
-  );
-
-  // Prepare single/double click handlers
-  const onSingleClick = useCallback(
-    (event: MouseClickEvent) => onMouseClick(event, "single"),
-    [onMouseClick],
-  );
-  const onDoubleClick = useCallback(
-    (event: MouseClickEvent) => onMouseClick(event, "double"),
-    [onMouseClick],
-  );
-
-  return {
-    onSingleClick,
-    onDoubleClick,
-  };
 };
