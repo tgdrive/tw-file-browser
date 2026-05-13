@@ -161,7 +161,7 @@ export const FileGrid = memo(() => {
   // Empty state
   if (items.length === 0) {
     return (
-      <div className="size-full pl-2 pb-2 rounded-b-3xl">
+      <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
         <FileListEmpty />
       </div>
     );
@@ -170,7 +170,7 @@ export const FileGrid = memo(() => {
   // ---- List view: HeroUI ListBox + Virtualizer ListLayout ----
   if (isList) {
     return (
-      <div className="size-full pl-2 pb-2 rounded-b-3xl">
+      <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
         <Virtualizer layout={ListLayout} layoutOptions={{ estimatedRowSize: 56 }}>
           <ListBox
             aria-label="File browser"
@@ -180,7 +180,7 @@ export const FileGrid = memo(() => {
             onAction={handleAction}
             items={items}
             className="size-full overflow-y-auto"
-            style={{ minHeight: "100%", display: "block" }}
+            style={{ display: "block" }}
           >
             {(item: FileGridItem) => (
               <ListBox.Item
@@ -199,7 +199,7 @@ export const FileGrid = memo(() => {
 
   // ---- Grid / Tile view: GridList + Virtualizer GridLayout ----
   return (
-    <div className="size-full pl-2 pb-2 rounded-b-3xl">
+    <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
       <Virtualizer layout={GridLayout} layoutOptions={gridLayoutOptions}>
         <StyledGridList
           aria-label="File browser"
@@ -209,7 +209,7 @@ export const FileGrid = memo(() => {
           onAction={handleAction}
           layout="grid"
           items={items}
-          style={{ minHeight: "100%", display: "block" }}
+          style={{ display: "block" }}
         >
           {(item: FileGridItem) => (
             <StyledGridListItem
