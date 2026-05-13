@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  ListBox as AriaListBox,
-  ListBoxItem as AriaListBoxItem,
+  GridList as AriaGridList,
+  GridListItem as AriaGridListItem,
   composeRenderProps,
-  type ListBoxItemProps,
-  type ListBoxProps,
+  type GridListItemProps,
+  type GridListProps,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 import { twMerge } from "tailwind-merge";
@@ -33,35 +33,31 @@ function composeTailwindRenderProps<T>(
   return twMerge(tailwind, className);
 }
 
-// ---- Styled ListBox (RAC, used for both list and grid view) ----
+// ---- Styled GridList (used for grid/tile view only) ----
 
-export function StyledListBox<T extends object>({
+export function StyledGridList<T extends object>({
   className,
   ...props
-}: ListBoxProps<T>) {
+}: GridListProps<T>) {
   return (
-    <AriaListBox
+    <AriaGridList
       {...props}
       className={composeTailwindRenderProps(className, [
-        "size-full",
+        "size-full relative overflow-auto",
       ].join(" "))}
     />
   );
 }
 
-// ---- Styled ListBoxItem (tv-styled for both list and grid items) ----
+// ---- Styled GridListItem (tv-styled card for grid/tile items) ----
 
-export const listBoxItemStyles = tv({
+export const gridListItemStyles = tv({
   extend: focusRing,
   base: [
     "rounded-xl cursor-default select-none overflow-clip",
     "transition-all duration-150",
   ].join(" "),
   variants: {
-    isCard: {
-      true: "bg-surface shadow-sm",
-      false: "",
-    },
     isSelected: {
       true: "bg-accent-soft ring-2 ring-accent ring-offset-1",
       false: "hover:bg-accent-soft/40",
@@ -72,26 +68,23 @@ export const listBoxItemStyles = tv({
     },
   },
   defaultVariants: {
-    isCard: false,
     isSelected: false,
     isPressed: false,
   },
 });
 
-export function StyledListBoxItem({
+export function StyledGridListItem({
   children,
   className,
-  isCard,
   ...props
-}: ListBoxItemProps & { isCard?: boolean }) {
+}: GridListItemProps) {
   return (
-    <AriaListBoxItem
+    <AriaGridListItem
       {...props}
       className={composeRenderProps(className, (className, renderProps) =>
         twMerge(
-          listBoxItemStyles({
+          gridListItemStyles({
             isFocusVisible: renderProps.isFocusVisible,
-            isCard,
             isSelected: renderProps.isSelected,
             isPressed: renderProps.isPressed,
           }),
@@ -100,6 +93,6 @@ export function StyledListBoxItem({
       )}
     >
       {children}
-    </AriaListBoxItem>
+    </AriaGridListItem>
   );
 }
