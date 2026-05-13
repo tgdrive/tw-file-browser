@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useMemo, Key } from "react";
+import React, {
+  memo,
+  useCallback,
+  useMemo,
+  type ComponentType,
+  type ElementType,
+  Key,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -50,7 +57,7 @@ type FileGridItem = {
   index: number;
 };
 
-// ---- Content renderer (shared between list/grid paths) ----
+// ---- Content renderer (same for all view modes) ----
 
 const FileItemContent = memo(
   ({
@@ -75,6 +82,8 @@ const FileItemContent = memo(
 FileItemContent.displayName = "FileItemContent";
 
 // ---- Main FileGrid component ----
+// Unifies list (HeroUI ListBox) and grid/tile (GridList) into a single render path
+// by dynamically picking the collection and item wrapper based on view mode.
 
 export const FileGrid = memo(() => {
   const dispatch: FbDispatch = useDispatch();
@@ -145,18 +154,41 @@ export const FileGrid = memo(() => {
 
   const isList = viewMode === FileViewMode.List;
 
-  // Grid layout options (must be before early returns — hooks rule)
-  const gridLayoutOptions = useMemo(
-    () => ({
-      minItemSize: new Size(
-        viewMode === FileViewMode.Grid ? 180 : 200,
-        180,
-      ),
-      maxColumns: 12,
-      minSpace: new Size(8, 8),
-    }),
-    [viewMode],
+  // ---- Pick collection, item wrapper, layout, and options based on view mode ----
+
+  const Collection = (isList ? ListBox : StyledGridList) as
+    | typeof ListBox
+    | typeof StyledGridList;
+  const ItemWrapper = (isList ? ListBox.Item : StyledGridListItem) as
+    | ElementType
+    | ComponentType<any>;
+
+  const LayoutClass = isList ? ListLayout : GridLayout;
+
+  const layoutOptions = useMemo(
+    () =>
+      isList
+        ? { estimatedRowSize: 56 }
+        : {
+            minItemSize: new Size(
+              viewMode === FileViewMode.Grid ? 180 : 200,
+              180,
+            ),
+            maxColumns: 12,
+            minSpace: new Size(8, 8),
+          },
+    [isList, viewMode],
   );
+
+  // ListBox needs overflow-y-auto to scroll; StyledGridList gets size-full from its own className
+  const collectionClassName = isList
+    ? "size-full overflow-y-auto"
+    : undefined;
+
+  // StyledGridList needs layout="grid"; ListBox doesn't
+  const collectionExtraProps = isList ? {} : { layout: "grid" as const };
+  // StyledGridListItem needs isCard; ListBox.Item doesn't
+  const itemExtraProps = isList ? {} : { isCard: true as const };
 
   // Empty state
   if (items.length === 0) {
@@ -167,61 +199,32 @@ export const FileGrid = memo(() => {
     );
   }
 
-  // ---- List view: HeroUI ListBox + Virtualizer ListLayout ----
-  if (isList) {
-    return (
-      <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
-        <Virtualizer layout={ListLayout} layoutOptions={{ estimatedRowSize: 56 }}>
-          <ListBox
-            aria-label="File browser"
-            selectionMode="multiple"
-            selectedKeys={selectedKeys}
-            onSelectionChange={handleSelectionChange}
-            onAction={handleAction}
-            items={items}
-            className="size-full overflow-y-auto"
-            style={{ display: "block" }}
-          >
-            {(item: FileGridItem) => (
-              <ListBox.Item
-                key={item.id}
-                id={item.id}
-                textValue={getTextValue(item)}
-              >
-                <FileItemContent fileId={item.id} viewMode={viewMode} />
-              </ListBox.Item>
-            )}
-          </ListBox>
-        </Virtualizer>
-      </div>
-    );
-  }
-
-  // ---- Grid / Tile view: GridList + Virtualizer GridLayout ----
+  // Single unified render path
   return (
     <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
-      <Virtualizer layout={GridLayout} layoutOptions={gridLayoutOptions}>
-        <StyledGridList
+      <Virtualizer layout={LayoutClass} layoutOptions={layoutOptions}>
+        <Collection
           aria-label="File browser"
           selectionMode="multiple"
           selectedKeys={selectedKeys}
           onSelectionChange={handleSelectionChange}
           onAction={handleAction}
-          layout="grid"
           items={items}
+          className={collectionClassName}
           style={{ display: "block" }}
+          {...collectionExtraProps}
         >
           {(item: FileGridItem) => (
-            <StyledGridListItem
+            <ItemWrapper
               key={item.id}
               id={item.id}
               textValue={getTextValue(item)}
-              isCard
+              {...itemExtraProps}
             >
               <FileItemContent fileId={item.id} viewMode={viewMode} />
-            </StyledGridListItem>
+            </ItemWrapper>
           )}
-        </StyledGridList>
+        </Collection>
       </Virtualizer>
     </div>
   );
