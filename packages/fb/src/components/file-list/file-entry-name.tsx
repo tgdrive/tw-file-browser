@@ -5,7 +5,7 @@ import { FileData } from "@/types/file.types";
 import {
   useFileNameComponent,
   useModifierIconComponents,
-} from "./FileEntry-hooks";
+} from "./file-entry.hooks";
 
 export interface FileEntryNameProps {
   file: Nullable<FileData>;

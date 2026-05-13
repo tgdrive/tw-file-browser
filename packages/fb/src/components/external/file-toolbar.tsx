@@ -2,9 +2,9 @@ import React, { type ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import { selectToolbarItems } from "@/redux/selectors";
-import { SmartToolbarButton } from "./ToolbarButton";
-import { ToolbarDropdown } from "./ToolbarDropdown";
-import { ToolbarInfo } from "./ToolbarInfo";
+import { SmartToolbarButton } from "./toolbar-button";
+import { ToolbarDropdown } from "./toolbar-dropdown";
+import { ToolbarInfo } from "./toolbar-info";
 import clsx from "clsx";
 
 interface FileToolbarProps {

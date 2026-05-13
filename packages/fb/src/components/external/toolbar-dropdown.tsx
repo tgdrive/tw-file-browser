@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { FileActionGroup } from "@/types/action-menus.types";
 import { useLocalizedFileActionGroup } from "@/util/i18n";
-import { ToolbarButton, ToolbarButtonProps } from "./ToolbarButton";
-import { SmartToolbarDropdownButton } from "./ToolbarDropdownButton";
+import { ToolbarButton, ToolbarButtonProps } from "./toolbar-button";
+import { SmartToolbarDropdownButton } from "./toolbar-dropdown-button";
 import { Popover } from "@heroui/react";
 import { FocusScope } from "@react-aria/focus";
 

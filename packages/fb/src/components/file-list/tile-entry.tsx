@@ -1,10 +1,10 @@
 import React from "react";
 
 import { FileEntryProps } from "@/types/file-list.types";
-import { useFileEntryHtmlProps, useFileEntryState } from "./FileEntry-hooks";
-import { FileEntryName } from "./FileEntryName";
+import { useFileEntryHtmlProps, useFileEntryState } from "./file-entry.hooks";
+import { FileEntryName } from "./file-entry-name";
 import { useLocalizedFileEntryStrings } from "@/util/i18n";
-import { FbIcon } from "../external/FbIcon";
+import { FbIcon } from "../external/fb-icon";
 import clsx from "clsx";
 import { FileHelper } from "@/util/file-helper";
 

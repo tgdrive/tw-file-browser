@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from "react";
 import type { ComponentPropsWithoutRef, ElementType } from "react";
-import { useClickHandler } from "./ClickableWrapper-hooks";
+import { useClickHandler } from "./clickable-wrapper.hooks";
 import { useHover } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useFocusRing } from "@react-aria/focus";

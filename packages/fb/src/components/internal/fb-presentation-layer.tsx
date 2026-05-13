@@ -9,8 +9,8 @@ import {
 } from "@/redux/selectors";
 import type { FbDispatch } from "@/types/redux.types";
 import { elementIsInsideButton } from "@/util/helpers";
-import { useContextMenuTrigger } from "@/components/external/FileContextMenu-hooks";
-import { HotkeyListener } from "./HotkeyListener";
+import { useContextMenuTrigger } from "@/components/external/file-context-menu.hooks";
+import { HotkeyListener } from "./hotkey-listener";
 import React from "react";
 
 export interface FbPresentationLayerProps {

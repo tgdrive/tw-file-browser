@@ -1,9 +1,11 @@
 import React, { type ReactElement, useMemo } from "react";
 
 import { FbActions } from "@/action-definitions/index";
-import { useFolderChainItems } from "./FileNavbar-hooks";
-import { FolderChainButton } from "./FolderChainButton";
-import { SmartToolbarButton } from "./ToolbarButton";
+import { useFolderChainItems } from "./file-navbar.hooks";
+
+import { FolderChainButton } from "./folder-chain-button";
+
+import { SmartToolbarButton } from "./toolbar-button";
 import { Breadcrumbs } from "@heroui/react";
 import type { Nilable } from "tsdef";
 import clsx from "clsx";

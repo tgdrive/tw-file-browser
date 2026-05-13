@@ -2,9 +2,9 @@ import React, { useCallback, forwardRef, memo, Ref } from "react";
 import { useSelector } from "react-redux";
 import { selectFileViewConfig, selectors } from "@/redux/selectors";
 import { FileListProps } from "@/types/file-list.types";
-import { FileListEmpty } from "./FileListEmpty";
-import { GridContainer } from "./GridContainer";
-import { ListContainer } from "./ListContainer";
+import { FileListEmpty } from "./file-list-empty";
+import { GridContainer } from "./grid-container";
+import { ListContainer } from "./list-container";
 import type { VirtuosoHandle, VirtuosoGridHandle } from "react-virtuoso";
 import { FileViewMode } from "@/util/enums";
 

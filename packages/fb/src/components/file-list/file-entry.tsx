@@ -5,13 +5,13 @@ import { selectFileData, selectIsFileSelected } from "@/redux/selectors";
 import { useParamSelector } from "@/redux/store";
 import { FileEntryProps } from "@/types/file-list.types";
 import { FileHelper } from "@/util/file-helper";
-import { ClickableWrapper } from "@/components/internal/ClickableWrapper";
-import { useFileClickHandlers } from "./FileEntry-hooks";
-import { GridEntry } from "./GridEntry";
-import { ListEntry } from "./ListEntry";
+import { ClickableWrapper } from "@/components/internal/clickable-wrapper";
+import { useFileClickHandlers } from "./file-entry.hooks";
+import { GridEntry } from "./grid-entry";
+import { ListEntry } from "./list-entry";
 import { FileViewMode } from "@/util/enums";
 import clsx from "clsx";
-import { TileEntry } from "./TileEntry";
+import { TileEntry } from "./tile-entry";
 
 export interface SmartFileEntryProps {
   fileId: Nullable<string>;

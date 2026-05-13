@@ -1,8 +1,8 @@
 import React from "react";
 import { Nullable } from "tsdef";
 import { FbIconName } from "@/util/enums";
-import { FileThumbnail } from "./FileThumbnail";
-import { FbIcon } from "../external/FbIcon";
+import { FileThumbnail } from "./file-thumbnail";
+import { FbIcon } from "../external/fb-icon";
 import clsx from "clsx";
 
 export interface FileEntryPreviewProps {

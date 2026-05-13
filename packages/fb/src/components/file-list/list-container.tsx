@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, forwardRef } from "react";
 import { useSelector } from "react-redux";
 import { selectors } from "@/redux/selectors";
 import { useInstanceVariable } from "@/util/hooks-helpers";
-import { SmartFileEntry } from "./FileEntry";
+import { SmartFileEntry } from "./file-entry";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { FileListProps } from "@/types/file-list.types";
 import { scrollbarClasses } from "@/util/classes";

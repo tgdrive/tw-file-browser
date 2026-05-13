@@ -6,7 +6,7 @@ import { useParamSelector } from "@/redux/store";
 import { FbIconName, CustomVisibilityState } from "@/util/enums";
 import { useFileActionProps, useFileActionTrigger } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
-import { FbIcon } from "./FbIcon";
+import { FbIcon } from "./fb-icon";
 import clsx from "clsx";
 
 type ToolbarDropdownButtonProps = {

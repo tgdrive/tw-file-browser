@@ -6,9 +6,9 @@ import {
 	FileEntryState,
 	useFileEntryHtmlProps,
 	useFileEntryState,
-} from "./FileEntry-hooks";
-import { FileEntryName } from "./FileEntryName";
-import { FbIcon } from "../external/FbIcon";
+} from "./file-entry.hooks";
+import { FileEntryName } from "./file-entry-name";
+import { FbIcon } from "../external/fb-icon";
 import { FileHelper } from "@/util/file-helper";
 import clsx from "clsx";
 

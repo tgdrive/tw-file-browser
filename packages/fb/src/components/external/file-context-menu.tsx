@@ -6,9 +6,9 @@ import {
 	selectContextMenuConfig,
 	selectContextMenuItems,
 } from "@/redux/selectors";
+import { useContextMenuDismisser } from "./file-context-menu.hooks";
 
-import { useContextMenuDismisser } from "./FileContextMenu-hooks";
-import { SmartToolbarDropdownButton } from "./ToolbarDropdownButton";
+import { SmartToolbarDropdownButton } from "./toolbar-dropdown-button";
 import type { FbDispatch } from "@/types/redux.types";
 import { Popover } from "@heroui/react";
 import { useMediaQuery } from "@react-hook/media-query";

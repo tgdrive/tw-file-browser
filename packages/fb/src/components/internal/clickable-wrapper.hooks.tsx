@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Nilable, Nullable } from "tsdef";
 
 import { selectDoubleClickDelay } from "@/redux/selectors";
-import { MouseClickEvent, MouseClickEventHandler } from "./ClickableWrapper";
+import { MouseClickEvent, MouseClickEventHandler } from "./clickable-wrapper";
 
 export const useClickHandler = (
   onSingleClick: Nilable<MouseClickEventHandler>,

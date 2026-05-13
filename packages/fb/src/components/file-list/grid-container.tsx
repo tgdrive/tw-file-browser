@@ -4,9 +4,9 @@ import { selectFileViewConfig, selectors } from "@/redux/selectors";
 import { FileListProps } from "@/types/file-list.types";
 import { FileViewConfig } from "@/types/file-view.types";
 import { useInstanceVariable } from "@/util/hooks-helpers";
-import { SmartFileEntry } from "./FileEntry";
+import { SmartFileEntry } from "./file-entry";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { Scroller } from "./ListContainer";
+import { Scroller } from "./list-container";
 import clsx from "clsx";
 
 export const GridContainer = React.memo(

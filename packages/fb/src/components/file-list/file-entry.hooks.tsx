@@ -18,8 +18,8 @@ import { FbDispatch } from "@/types/redux.types";
 import { FileHelper } from "@/util/file-helper";
 import { ColorsLight, useIconData } from "@/util/icon-helper";
 import { Logger } from "@/util/logger";
-import { FbIcon } from "@/components/external/FbIcon";
-import { MouseClickEvent } from "@/components/internal/ClickableWrapper";
+import { FbIcon } from "@/components/external/fb-icon";
+import { MouseClickEvent } from "@/components/internal/clickable-wrapper";
 
 export type FileEntryState = {
   childrenCount: Nullable<number>;

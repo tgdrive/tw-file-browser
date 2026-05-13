@@ -1,8 +1,8 @@
 import React, { memo } from "react";
 
 import { FbIconName } from "@/util/enums";
-import { FolderChainItem } from "./FileNavbar-hooks";
-import { ToolbarButton } from "./ToolbarButton";
+import { FolderChainItem } from "./file-navbar.hooks";
+import { ToolbarButton } from "./toolbar-button";
 export interface FolderChainButtonProps {
 	first: boolean;
 	current: boolean;
