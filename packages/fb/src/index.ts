@@ -4,15 +4,15 @@ import type {
 } from "./types/action-handler.types";
 import type { FbActionUnion } from "./types/file-browser.types";
 
-export { FileBrowser } from "./components/external/file-browser";
+export { FileBrowser } from "./components/file-browser/file-browser";
 
-export { FileNavbar } from "./components/external/file-navbar";
-export { FileToolbar } from "./components/external/file-toolbar";
+export { FileNavbar } from "./components/nav/file-navbar";
+export { FileToolbar } from "./components/toolbar/file-toolbar";
 export { FileList } from "./components/file-list/file-list";
-export { FileContextMenu } from "./components/external/file-context-menu";
-export { FullFileBrowser } from "./components/external/full-file-browser";
+export { FileContextMenu } from "./components/context-menu/file-context-menu";
+export { FullFileBrowser } from "./components/file-browser/full-file-browser";
 
-export { FbIcon } from "./components/external/fb-icon";
+export { FbIcon } from "./components/shared/fb-icon";
 
 export { FbActions, DefaultFileActions, OptionIds } from "./action-definitions";
 

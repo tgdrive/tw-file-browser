@@ -14,7 +14,7 @@ import { FbIconName } from "@/util/enums";
 import { FileHelper } from "@/util/file-helper";
 import { ColorsLight, useIconData } from "@/util/icon-helper";
 import { Logger } from "@/util/logger";
-import { FbIcon } from "@/components/external/fb-icon";
+import { FbIcon } from "@/components/shared/fb-icon";
 
 export type FileEntryState = {
   childrenCount: Nullable<number>;

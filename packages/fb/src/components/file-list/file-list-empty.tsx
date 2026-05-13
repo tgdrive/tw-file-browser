@@ -3,7 +3,7 @@ import { useIntl } from "react-intl";
 
 import { FbIconName } from "@/util/enums";
 import { getI18nId, I18nNamespace } from "@/util/i18n";
-import { FbIcon } from "../external/fb-icon";
+import { FbIcon } from "../shared/fb-icon";
 
 export const FileListEmpty = () => {
   const intl = useIntl();

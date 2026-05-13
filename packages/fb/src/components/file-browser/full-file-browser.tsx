@@ -6,9 +6,9 @@ import type {
 } from "@/types/file-browser.types";
 import { FileList } from "@/components/file-list/file-list";
 import { FileBrowser } from "./file-browser";
-import { FileNavbar } from "./file-navbar";
-import { FileToolbar } from "./file-toolbar";
-import { FileContextMenu } from "./file-context-menu";
+import { FileNavbar } from "../nav/file-navbar";
+import { FileToolbar } from "../toolbar/file-toolbar";
+import { FileContextMenu } from "../context-menu/file-context-menu";
 
 export const FullFileBrowser = React.memo(
 	React.forwardRef<FileBrowserHandle, FileBrowserProps>((props, ref) => {

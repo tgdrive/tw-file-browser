@@ -7,7 +7,7 @@ import { FbIconName, CustomVisibilityState } from "@/util/enums";
 import { useFileActionProps, useFileActionTrigger } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
 import { Button, type ButtonProps } from "@heroui/react";
-import { FbIcon } from "./fb-icon";
+import { FbIcon } from "../shared/fb-icon";
 import clsx from "clsx";
 
 export type ToolbarButtonProps = {

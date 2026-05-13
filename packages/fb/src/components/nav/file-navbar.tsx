@@ -5,7 +5,7 @@ import { useFolderChainItems } from "./file-navbar.hooks";
 
 import { FolderChainButton } from "./folder-chain-button";
 
-import { SmartToolbarButton } from "./toolbar-button";
+import { SmartToolbarButton } from "../toolbar/toolbar-button";
 import { Breadcrumbs } from "@heroui/react";
 import type { Nilable } from "tsdef";
 import clsx from "clsx";

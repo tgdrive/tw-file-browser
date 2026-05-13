@@ -8,7 +8,7 @@ import {
 	useFileEntryState,
 } from "./file-entry.hooks";
 import { FileEntryName } from "./file-entry-name";
-import { FbIcon } from "../external/fb-icon";
+import { FbIcon } from "../shared/fb-icon";
 import { FileHelper } from "@/util/file-helper";
 import clsx from "clsx";
 

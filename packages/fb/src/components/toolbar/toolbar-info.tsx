@@ -5,7 +5,7 @@ import { reduxActions } from "@/redux/reducers";
 import { FbDispatch } from "@/types/redux.types";
 import { FbIconName } from "@/util/enums";
 import { Button } from "@heroui/react";
-import { FbIcon } from "./fb-icon";
+import { FbIcon } from "../shared/fb-icon";
 import clsx from "clsx";
 
 export interface ToolbarInfoProps {

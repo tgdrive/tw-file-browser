@@ -11,8 +11,8 @@ import { defaultConfig } from "@/util/default-config";
 import { getValueOrFallback } from "@/util/helpers";
 import { useStaticValue } from "@/util/hooks-helpers";
 import { FbFormattersContext, defaultFormatters } from "@/util/i18n";
-import { FbBusinessLogic } from "@/components/internal/fb-business-logic";
-import { FbPresentationLayer } from "@/components/internal/fb-presentation-layer";
+import { FbBusinessLogic } from "./fb-business-logic";
+import { FbPresentationLayer } from "./fb-presentation-layer";
 
 export const FileBrowser = React.forwardRef<
 	FileBrowserHandle,
