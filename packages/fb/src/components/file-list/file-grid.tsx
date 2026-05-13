@@ -179,7 +179,7 @@ export const FileGrid = memo(() => {
             onSelectionChange={handleSelectionChange}
             onAction={handleAction}
             items={items}
-            className="size-full"
+            className="size-full overflow-y-auto"
             style={{ minHeight: "100%", display: "block" }}
           >
             {(item: FileGridItem) => (
