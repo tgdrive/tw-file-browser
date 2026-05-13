@@ -1,9 +1,10 @@
 import React from "react";
 import {
-  GridList as AriaGridList,
-  GridListItem as AriaGridListItem,
-  type GridListItemProps,
-  type GridListProps,
+  ListBox as AriaListBox,
+  ListBoxItem as AriaListBoxItem,
+  composeRenderProps,
+  type ListBoxItemProps,
+  type ListBoxProps,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 import { twMerge } from "tailwind-merge";
@@ -32,25 +33,25 @@ function composeTailwindRenderProps<T>(
   return twMerge(tailwind, className);
 }
 
-// ---- Styled GridList ----
+// ---- Styled ListBox (RAC, used for both list and grid view) ----
 
-export function StyledGridList<T extends object>({
+export function StyledListBox<T extends object>({
   className,
   ...props
-}: GridListProps<T>) {
+}: ListBoxProps<T>) {
   return (
-    <AriaGridList
+    <AriaListBox
       {...props}
       className={composeTailwindRenderProps(className, [
-        "size-full relative overflow-auto",
+        "size-full",
       ].join(" "))}
     />
   );
 }
 
-// ---- Styled GridListItem ----
+// ---- Styled ListBoxItem (tv-styled for both list and grid items) ----
 
-export const gridListItemStyles = tv({
+export const listBoxItemStyles = tv({
   extend: focusRing,
   base: [
     "rounded-xl cursor-default select-none overflow-clip",
@@ -77,30 +78,28 @@ export const gridListItemStyles = tv({
   },
 });
 
-export function StyledGridListItem({
+export function StyledListBoxItem({
   children,
   className,
   isCard,
   ...props
-}: GridListItemProps & { isCard?: boolean }) {
+}: ListBoxItemProps & { isCard?: boolean }) {
   return (
-    <AriaGridListItem
+    <AriaListBoxItem
       {...props}
-      className={(renderProps) =>
+      className={composeRenderProps(className, (className, renderProps) =>
         twMerge(
-          gridListItemStyles({
+          listBoxItemStyles({
             isFocusVisible: renderProps.isFocusVisible,
             isCard,
             isSelected: renderProps.isSelected,
             isPressed: renderProps.isPressed,
           }),
-          typeof className === "function"
-            ? className(renderProps as any)
-            : (className ?? ""),
-        )
-      }
+          className as string,
+        ),
+      )}
     >
       {children}
-    </AriaGridListItem>
+    </AriaListBoxItem>
   );
 }

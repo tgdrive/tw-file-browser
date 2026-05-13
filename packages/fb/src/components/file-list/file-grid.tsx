@@ -2,8 +2,6 @@ import React, {
   memo,
   useCallback,
   useMemo,
-  type ComponentType,
-  type ElementType,
   Key,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +13,6 @@ import {
   Size,
 } from "react-aria-components";
 import type { Selection } from "react-aria-components";
-import { ListBox } from "@heroui/react";
 
 import {
   selectFileViewConfig,
@@ -36,7 +33,7 @@ import { GridEntry } from "./grid-entry";
 import { ListEntry } from "./list-entry";
 import { TileEntry } from "./tile-entry";
 import { FileListEmpty } from "./file-list-empty";
-import { StyledGridList, StyledGridListItem } from "./styled-grid-list";
+import { StyledListBox, StyledListBoxItem } from "./styled-grid-list";
 
 // ---- Parametrized selectors ----
 
@@ -82,8 +79,9 @@ const FileItemContent = memo(
 FileItemContent.displayName = "FileItemContent";
 
 // ---- Main FileGrid component ----
-// Unifies list (HeroUI ListBox) and grid/tile (GridList) into a single render path
-// by dynamically picking the collection and item wrapper based on view mode.
+// Uses RAC ListBox for both list and grid views. The Virtualizer handles layout
+// positioning (ListLayout vs GridLayout). The isCard prop on StyledListBoxItem
+// controls whether items render as cards (grid/tile) or rows (list).
 
 export const FileGrid = memo(() => {
   const dispatch: FbDispatch = useDispatch();
@@ -154,17 +152,8 @@ export const FileGrid = memo(() => {
 
   const isList = viewMode === FileViewMode.List;
 
-  // ---- Pick collection, item wrapper, layout, and options based on view mode ----
-
-  const Collection = (isList ? ListBox : StyledGridList) as
-    | typeof ListBox
-    | typeof StyledGridList;
-  const ItemWrapper = (isList ? ListBox.Item : StyledGridListItem) as
-    | ElementType
-    | ComponentType<any>;
-
+  // ---- Layout & options based on view mode ----
   const LayoutClass = isList ? ListLayout : GridLayout;
-
   const layoutOptions = useMemo(
     () =>
       isList
@@ -180,17 +169,7 @@ export const FileGrid = memo(() => {
     [isList, viewMode],
   );
 
-  // ListBox needs overflow-y-auto to scroll; StyledGridList gets size-full from its own className
-  const collectionClassName = isList
-    ? "size-full overflow-y-auto"
-    : undefined;
-
-  // StyledGridList needs layout="grid"; ListBox doesn't
-  const collectionExtraProps = isList ? {} : { layout: "grid" as const };
-  // StyledGridListItem needs isCard; ListBox.Item doesn't
-  const itemExtraProps = isList ? {} : { isCard: true as const };
-
-  // Empty state
+  // ---- Empty state ----
   if (items.length === 0) {
     return (
       <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
@@ -199,32 +178,31 @@ export const FileGrid = memo(() => {
     );
   }
 
-  // Single unified render path
+  // ---- Single unified render path (RAC ListBox for both layouts) ----
   return (
     <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
       <Virtualizer layout={LayoutClass} layoutOptions={layoutOptions}>
-        <Collection
+        <StyledListBox
           aria-label="File browser"
           selectionMode="multiple"
           selectedKeys={selectedKeys}
           onSelectionChange={handleSelectionChange}
           onAction={handleAction}
           items={items}
-          className={collectionClassName}
+          className="size-full overflow-y-auto"
           style={{ display: "block" }}
-          {...collectionExtraProps}
         >
           {(item: FileGridItem) => (
-            <ItemWrapper
+            <StyledListBoxItem
               key={item.id}
               id={item.id}
               textValue={getTextValue(item)}
-              {...itemExtraProps}
+              isCard={!isList}
             >
               <FileItemContent fileId={item.id} viewMode={viewMode} />
-            </ItemWrapper>
+            </StyledListBoxItem>
           )}
-        </Collection>
+        </StyledListBox>
       </Virtualizer>
     </div>
   );
