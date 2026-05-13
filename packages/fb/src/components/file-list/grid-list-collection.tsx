@@ -9,31 +9,23 @@ import {
 import { tv } from "tailwind-variants";
 import { twMerge } from "tailwind-merge";
 
-// ---- Shared focus ring utility (matches RAC Tailwind starter pattern) ----
-
 export const focusRing = tv({
   base: "outline-none",
   variants: {
     isFocusVisible: {
       false: "",
-      true: "outline-2 outline-accent -outline-offset-2",
+      true: "status-focused",
     },
   },
 });
 
-// ---- Helper: composeTailwindRenderProps (matches RAC starter) ----
-
-function composeTailwindRenderProps<T>(
+export function composeTailwindRenderProps<T>(
   className: string | ((v: T) => string) | undefined,
-  tailwind: string,
+  tw: string,
 ): string | ((v: T) => string) {
-  if (typeof className === "function") {
-    return (v: T) => twMerge(className(v), tailwind);
-  }
-  return twMerge(tailwind, className);
+  return composeRenderProps(className, (className) => twMerge(tw, className));
 }
 
-// ---- Styled GridList (used for grid/tile view only) ----
 
 export function StyledGridList<T extends object>({
   className,
@@ -49,27 +41,37 @@ export function StyledGridList<T extends object>({
   );
 }
 
-// ---- Styled GridListItem (tv-styled card for grid/tile items) ----
 
 export const gridListItemStyles = tv({
   extend: focusRing,
   base: [
-    "rounded-xl cursor-default select-none overflow-clip",
-    "transition-all duration-150",
+    "relative w-full rounded-2xl outline-none no-highlight overflow-clip select-none",
+    "[cursor:var(--cursor-interactive)]",
+    "transition-[transform,box-shadow] duration-250 ease-out motion-reduce:transition-none",
   ].join(" "),
   variants: {
     isSelected: {
-      true: "bg-accent-soft ring-2 ring-accent ring-offset-1",
-      false: "hover:bg-accent-soft/40",
+      true: "",
+      false: "",
+    },
+    isHovered: {
+      true: "bg-default",
+      false: "",
     },
     isPressed: {
       true: "scale-[0.98]",
       false: "",
     },
+    isDisabled: {
+      true: "status-disabled",
+      false: "",
+    },
   },
   defaultVariants: {
     isSelected: false,
+    isHovered: false,
     isPressed: false,
+    isDisabled: false,
   },
 });
 
@@ -86,7 +88,9 @@ export function StyledGridListItem({
           gridListItemStyles({
             isFocusVisible: renderProps.isFocusVisible,
             isSelected: renderProps.isSelected,
+            isHovered: renderProps.isHovered,
             isPressed: renderProps.isPressed,
+            isDisabled: renderProps.isDisabled,
           }),
           className as string,
         ),

@@ -29,9 +29,7 @@ import { GridEntry } from "./grid-entry";
 import { ListEntry } from "./list-entry";
 import { TileEntry } from "./tile-entry";
 import { FileListEmpty } from "./file-list-empty";
-import { StyledGridList, StyledGridListItem } from "./styled-grid-list";
-
-// ---- Parametrized selectors ----
+import { StyledGridList, StyledGridListItem } from "./grid-list-collection";
 
 const selectIsFileSelected =
   (fileId: Nullable<string>) =>
@@ -43,14 +41,10 @@ const selectFileDataById =
   (state: any): Nullable<FileData> =>
     fileId ? state.fileMap?.[fileId] ?? null : null;
 
-// ---- Item wrapper type ----
-
 type FileGridItem = {
   id: string;
   index: number;
 };
-
-// ---- Content renderer (same for all view modes) ----
 
 const FileItemContent = memo(
   ({
@@ -74,10 +68,6 @@ const FileItemContent = memo(
 );
 FileItemContent.displayName = "FileItemContent";
 
-// ---- Main FileGrid component ----
-// List view uses HeroUI ListBox (proper row sizing from HeroUI CSS).
-// Grid/Tile view uses RAC GridList with tv-styled cards.
-
 export const FileGrid = memo(() => {
   const dispatch: FbDispatch = useDispatch();
   const displayFileIds: (string | null)[] = useSelector(
@@ -89,7 +79,6 @@ export const FileGrid = memo(() => {
 
   const viewMode = viewConfig.mode;
 
-  // Filter out nulls and wrap with index for RAC dynamic collection
   const items: FileGridItem[] = useMemo(
     () =>
       displayFileIds
@@ -98,13 +87,11 @@ export const FileGrid = memo(() => {
     [displayFileIds],
   );
 
-  // Sync Redux selection → RAC selectedKeys
   const selectedKeys: Selection = useMemo(
     () => new Set(selectedFileIds),
     [selectedFileIds],
   );
 
-  // Handle RAC selection change → sync back to Redux
   const handleSelectionChange = useCallback(
     (keys: Selection) => {
       if (keys === "all") {
@@ -117,7 +104,6 @@ export const FileGrid = memo(() => {
     [dispatch],
   );
 
-  // Handle double-click / Enter → open file action
   const handleAction = useCallback(
     (key: Key) => {
       const fileId = key as string;
@@ -139,7 +125,6 @@ export const FileGrid = memo(() => {
     [dispatch, displayFileIds, fileMap],
   );
 
-  // Get textValue for an item (for accessibility/typeahead)
   const getTextValue = useCallback(
     (item: FileGridItem) => fileMap[item.id]?.name ?? "Loading...",
     [fileMap],
@@ -147,20 +132,23 @@ export const FileGrid = memo(() => {
 
   const isList = viewMode === FileViewMode.List;
 
-  // Grid layout options (must be before early returns — hooks rule)
-  const gridLayoutOptions = useMemo(
-    () => ({
-      minItemSize: new Size(
-        viewMode === FileViewMode.Grid ? 180 : 200,
-        180,
-      ),
-      maxColumns: 12,
-      minSpace: new Size(8, 8),
-    }),
-    [viewMode],
+  const virtualizerLayout = isList ? ListLayout : GridLayout;
+
+  const virtualizerLayoutOptions = useMemo(
+    () =>
+      isList
+        ? { estimatedRowSize: 56 }
+        : {
+            minItemSize: new Size(
+              viewMode === FileViewMode.Grid ? 180 : 200,
+              180,
+            ),
+            maxColumns: 12,
+            minSpace: new Size(8, 8),
+          },
+    [isList, viewMode],
   );
 
-  // Empty state
   if (items.length === 0) {
     return (
       <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
@@ -169,11 +157,13 @@ export const FileGrid = memo(() => {
     );
   }
 
-  // ---- List view: HeroUI ListBox + Virtualizer ListLayout ----
-  if (isList) {
-    return (
-      <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
-        <Virtualizer layout={ListLayout} layoutOptions={{ estimatedRowSize: 56 }}>
+  return (
+    <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
+      <Virtualizer
+        layout={virtualizerLayout}
+        layoutOptions={virtualizerLayoutOptions}
+      >
+        {isList ? (
           <ListBox
             aria-label="File browser"
             selectionMode="multiple"
@@ -181,7 +171,7 @@ export const FileGrid = memo(() => {
             onSelectionChange={handleSelectionChange}
             onAction={handleAction}
             items={items}
-            className="size-full"
+            className="size-full relative overflow-y-auto overflow-x-hidden"
             style={{ display: "block" }}
           >
             {(item: FileGridItem) => (
@@ -194,35 +184,28 @@ export const FileGrid = memo(() => {
               </ListBox.Item>
             )}
           </ListBox>
-        </Virtualizer>
-      </div>
-    );
-  }
-
-  // ---- Grid/Tile view: GridList + Virtualizer GridLayout ----
-  return (
-    <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
-      <Virtualizer layout={GridLayout} layoutOptions={gridLayoutOptions}>
-        <StyledGridList
-          aria-label="File browser"
-          selectionMode="multiple"
-          selectedKeys={selectedKeys}
-          onSelectionChange={handleSelectionChange}
-          onAction={handleAction}
-          layout="grid"
-          items={items}
-          style={{ display: "block" }}
-        >
-          {(item: FileGridItem) => (
-            <StyledGridListItem
-              key={item.id}
-              id={item.id}
-              textValue={getTextValue(item)}
-            >
-              <FileItemContent fileId={item.id} viewMode={viewMode} />
-            </StyledGridListItem>
-          )}
-        </StyledGridList>
+        ) : (
+          <StyledGridList
+            aria-label="File browser"
+            selectionMode="multiple"
+            selectedKeys={selectedKeys}
+            onSelectionChange={handleSelectionChange}
+            onAction={handleAction}
+            layout="grid"
+            items={items}
+            style={{ display: "block" }}
+          >
+            {(item: FileGridItem) => (
+              <StyledGridListItem
+                key={item.id}
+                id={item.id}
+                textValue={getTextValue(item)}
+              >
+                <FileItemContent fileId={item.id} viewMode={viewMode} />
+              </StyledGridListItem>
+            )}
+          </StyledGridList>
+        )}
       </Virtualizer>
     </div>
   );
