@@ -3,7 +3,6 @@ export enum FbIconName {
   loading = "loading",
   dropdown = "dropdown",
   placeholder = "placeholder",
-  newTab = "newTab",
   plus = "plus",
   menu = "menu",
   openOptions = "openOptions",
@@ -32,6 +31,8 @@ export enum FbIconName {
   sortNameDesc = "sortNameDesc",
   sortDateAsc = "sortDateAsc",
   sortDateDesc = "sortDateDesc",
+  sortSizeAsc = "sortSizeAsc",
+  sortSizeDesc = "sortSizeDesc",
   sort = "sort",
 
   // File Actions: File Views

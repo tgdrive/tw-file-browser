@@ -13,19 +13,25 @@ export const GridEntry = React.memo(({ file, selected }: FileEntryProps) => {
 	const fileEntryHtmlProps = useFileEntryHtmlProps(file);
 	const { fileModDateString, fileSizeString } =
 		useLocalizedFileEntryStrings(file);
+	const metaSize = isDir ? "Folder" : fileSizeString || "0 B";
 
 	return (
-		<div className={"flex flex-col h-full p-2 gap-2"} {...fileEntryHtmlProps}>
-			<FileEntryName className="text-base truncate" file={file} />
-			<GridEntryPreview
-				icon={icon}
-				color={color}
-				thumbnailUrl={thumbnailUrl}
-				isDir={isDir}
-			/>
-			<div className="flex flex-col gap-1 text-sm">
-				<span>{fileModDateString}</span>
-				<span>{fileSizeString || "0 B"}</span>
+		<div className="flex h-full min-h-45 flex-col p-2" {...fileEntryHtmlProps}>
+			<div className="flex min-h-0 flex-1 items-center justify-center">
+				<GridEntryPreview
+					className="w-full"
+					icon={icon}
+					color={color}
+					thumbnailUrl={thumbnailUrl}
+					isDir={isDir}
+				/>
+			</div>
+			<div className="mt-2 min-w-0 space-y-1">
+				<FileEntryName className="truncate text-sm font-medium" file={file} />
+				<div className="flex items-center justify-between gap-2 text-xs tabular-nums text-muted">
+					<span className="truncate">{metaSize}</span>
+					<span className="truncate text-right">{fileModDateString}</span>
+				</div>
 			</div>
 		</div>
 	);

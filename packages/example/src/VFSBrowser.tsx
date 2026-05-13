@@ -1,13 +1,11 @@
 import {
 	FbActions,
 	FbFileActionData,
-	FbIconName,
 	FileArray,
 	FileBrowserProps,
 	FileData,
 	FileHelper,
 	FullFileBrowser,
-	defineFileAction,
 } from "file-browser";
 import React, {
 	useCallback,
@@ -26,14 +24,6 @@ interface CustomFileData extends FileData {
 interface CustomFileMap {
 	[fileId: string]: CustomFileData;
 }
-const fileActionGroups = {
-	OpenOptions: {
-		sortOrder: -1,
-		icon: "majesticons:open-line",
-		tooltip: "Create New Item",
-	},
-};
-
 // Helper method to attach our custom TypeScript types to the imported JSON file map.
 const prepareCustomFileMap = () => {
 	const baseFileMap = DemoFsMap.fileMap as unknown as CustomFileMap;
@@ -281,11 +271,7 @@ export const VFSBrowser: React.FC<VFSProps> = React.memo((props) => {
 		createFolder,
 	);
 	const fileActions = useMemo(
-		() => [
-			action,
-			// FbActions.CreateFolder,
-			// FbActions.DeleteFiles,
-		],
+		() => [],
 		[],
 	);
 	const thumbnailGenerator = useCallback(
@@ -300,7 +286,6 @@ export const VFSBrowser: React.FC<VFSProps> = React.memo((props) => {
 				<FullFileBrowser
 					files={files}
 					fileActions={fileActions}
-					fileActionGroups={fileActionGroups}
 					folderChain={folderChain}
 					defaultFileViewActionId={FbActions.EnableGridView.id}
 					onFileAction={handleFileAction}
@@ -311,15 +296,3 @@ export const VFSBrowser: React.FC<VFSProps> = React.memo((props) => {
 		</>
 	);
 });
-const action = defineFileAction({
-	id: "copy_link",
-	requiresSelection: true,
-	fileFilter: (file) => !file.isDir,
-	button: {
-		name: "Open in VLC",
-		contextMenu: true,
-		group: "OpenOptions",
-		toolbar: true,
-		icon: FbIconName.copy,
-	},
-} as const);

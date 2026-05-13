@@ -27,7 +27,6 @@ import type { FileData } from "@/types/file.types";
 
 import { GridEntry } from "./grid-entry";
 import { ListEntry } from "./list-entry";
-import { TileEntry } from "./tile-entry";
 import { FileListEmpty } from "./file-list-empty";
 import { StyledGridList, StyledGridListItem } from "./grid-list-collection";
 
@@ -63,7 +62,7 @@ const FileItemContent = memo(
     if (viewMode === FileViewMode.Grid) {
       return <GridEntry file={file} selected={selected} />;
     }
-    return <TileEntry file={file} selected={selected} />;
+    return <GridEntry file={file} selected={selected} />;
   },
 );
 FileItemContent.displayName = "FileItemContent";
@@ -125,6 +124,32 @@ export const FileGrid = memo(() => {
     [dispatch, displayFileIds, fileMap],
   );
 
+  const handleItemContextMenu = useCallback(
+    (event: React.MouseEvent, fileId: string) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch(
+        thunkRequestFileAction(FbActions.OpenFileContextMenu, {
+          clientX: event.clientX,
+          clientY: event.clientY,
+          triggerFileId: fileId,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const handleEmptyAreaPointerDown = useCallback(
+    (event: React.PointerEvent) => {
+      if (event.button !== 0) return;
+      const target = event.target as HTMLElement;
+      if (target.closest("[data-file-id]")) return;
+      dispatch(reduxActions.clearSelection());
+    },
+    [dispatch],
+  );
+
   const getTextValue = useCallback(
     (item: FileGridItem) => fileMap[item.id]?.name ?? "Loading...",
     [fileMap],
@@ -158,7 +183,10 @@ export const FileGrid = memo(() => {
   }
 
   return (
-    <div className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0">
+    <div
+      className="flex-1 pl-2 pb-2 rounded-b-3xl min-h-0"
+      onPointerDownCapture={handleEmptyAreaPointerDown}
+    >
       <Virtualizer
         layout={virtualizerLayout}
         layoutOptions={virtualizerLayoutOptions}
@@ -167,18 +195,21 @@ export const FileGrid = memo(() => {
           <ListBox
             aria-label="File browser"
             selectionMode="multiple"
+            selectionBehavior="replace"
             selectedKeys={selectedKeys}
             onSelectionChange={handleSelectionChange}
             onAction={handleAction}
             items={items}
-            className="size-full relative overflow-y-auto overflow-x-hidden"
-            style={{ display: "block" }}
+            className="size-full p-0 relative overflow-y-auto"
           >
             {(item: FileGridItem) => (
               <ListBox.Item
                 key={item.id}
                 id={item.id}
+                data-file-id={item.id}
                 textValue={getTextValue(item)}
+                className="w-full mt-0.5 data-[selected=true]:bg-accent-soft"
+                onContextMenu={(event) => handleItemContextMenu(event, item.id)}
               >
                 <FileItemContent fileId={item.id} viewMode={viewMode} />
               </ListBox.Item>
@@ -188,6 +219,7 @@ export const FileGrid = memo(() => {
           <StyledGridList
             aria-label="File browser"
             selectionMode="multiple"
+            selectionBehavior="replace"
             selectedKeys={selectedKeys}
             onSelectionChange={handleSelectionChange}
             onAction={handleAction}
@@ -199,7 +231,9 @@ export const FileGrid = memo(() => {
               <StyledGridListItem
                 key={item.id}
                 id={item.id}
+                data-file-id={item.id}
                 textValue={getTextValue(item)}
+                onContextMenu={(event) => handleItemContextMenu(event, item.id)}
               >
                 <FileItemContent fileId={item.id} viewMode={viewMode} />
               </StyledGridListItem>

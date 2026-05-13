@@ -5,7 +5,7 @@ import React, {
   useState,
 } from "react";
 import { useSelector } from "react-redux";
-import { Nullable, Undefinable } from "tsdef";
+import { Nullable } from "tsdef";
 
 import { selectThumbnailGenerator } from "@/redux/selectors";
 import { FileData } from "@/types/file.types";

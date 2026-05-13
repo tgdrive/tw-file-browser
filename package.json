@@ -6,7 +6,6 @@
 		"node": ">=18.x",
 		"bun": ">=1.x"
 	},
-	"packageManager": "bun@1.x",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/divyam234/tw-file-browser.git"

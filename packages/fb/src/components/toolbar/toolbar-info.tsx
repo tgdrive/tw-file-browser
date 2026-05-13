@@ -28,7 +28,7 @@ export const ToolbarInfo = React.memo(({ className }: ToolbarInfoProps) => {
     <div
       className={clsx(
         "inline-flex items-center gap-2",
-        !enabled && "text-muted/[0.38] pointer-events-none",
+        !enabled && "status-disabled",
         className,
       )}
     >
@@ -42,7 +42,7 @@ export const ToolbarInfo = React.memo(({ className }: ToolbarInfoProps) => {
         >
           <FbIcon icon={FbIconName.cross} fixedWidth={true} />
         </Button>
-        <p className="text-focus text-inherit text-label-large text-nowrap w-24">
+        <p className="text-inherit text-label-large text-nowrap w-24">
           {`${selectionSize} selected`}
         </p>
       </>

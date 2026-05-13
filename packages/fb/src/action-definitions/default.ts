@@ -150,6 +150,8 @@ export const DefaultActions = {
       name: "Sort by size",
       toolbar: true,
       group: "Sort",
+      ascIcon: FbIconName.sortSizeAsc,
+      descIcon: FbIconName.sortSizeDesc,
     },
   } as const),
   /**

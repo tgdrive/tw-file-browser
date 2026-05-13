@@ -11,7 +11,6 @@ import {
 import { useContextMenuDismisser } from "./file-context-menu.hooks";
 import type { FbDispatch } from "@/types/redux.types";
 import { Dropdown, Label, Kbd } from "@heroui/react";
-import { useMediaQuery } from "@react-hook/media-query";
 import { useFileActionProps } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
 import { useParamSelector } from "@/redux/store";
@@ -66,8 +65,6 @@ export const FileContextMenu = memo(() => {
     [contextMenuConfig],
   );
 
-  const sm = useMediaQuery("only screen and (max-width: 475px)");
-
   // Flatten menu items into a single list of action IDs
   const menuActionIds = useMemo(() => {
     const ids: string[] = [];
@@ -99,21 +96,12 @@ export const FileContextMenu = memo(() => {
         if (!open) hideContextMenu();
       }}
     >
-      <button
-        type="button"
-        style={{
-          position: "fixed",
-          top: anchorPosition?.top || 0,
-          left: anchorPosition?.left || 0,
-          width: 0,
-          height: 0,
-          opacity: 0,
-        }}
-        aria-hidden="true"
-      />
+      <Dropdown.Trigger
+       className="opacity-0 size-0 fixed"
+       style={{top: anchorPosition?.top || 0, left: anchorPosition?.left || 0}}/>
       <Dropdown.Popover
-        placement={sm ? "bottom" : "bottom start"}
-        className="min-w-[180px]"
+        placement="bottom start"
+        className="min-w-45 min-h-fit"
       >
         <Dropdown.Menu
           onAction={handleAction}
@@ -125,7 +113,7 @@ export const FileContextMenu = memo(() => {
           ))}
         </Dropdown.Menu>
       </Dropdown.Popover>
-    </Dropdown>
+      </Dropdown>
   );
 });
 FileContextMenu.displayName = "FileContextMenu";

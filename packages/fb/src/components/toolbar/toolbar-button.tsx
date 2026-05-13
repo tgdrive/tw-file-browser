@@ -47,10 +47,8 @@ export const ToolbarButton = memo(
       return (
         <Button
           ref={ref}
-          variant="tertiary"
+          variant="ghost"
           className={clsx(
-            "[&>svg]:size-5",
-            !isDisabled && "text-inherit",
             className,
           )}
           isDisabled={isDisabled}

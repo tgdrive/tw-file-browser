@@ -13,7 +13,6 @@ export const focusRing = tv({
   base: "outline-none",
   variants: {
     isFocusVisible: {
-      false: "",
       true: "status-focused",
     },
   },
@@ -35,7 +34,7 @@ export function StyledGridList<T extends object>({
     <AriaGridList
       {...props}
       className={composeTailwindRenderProps(className, [
-        "size-full relative overflow-auto",
+        "size-full relative overflow-y-auto overflow-x-hidden outline-none",
       ].join(" "))}
     />
   );
@@ -48,23 +47,16 @@ export const gridListItemStyles = tv({
     "relative w-full rounded-2xl outline-none no-highlight overflow-clip select-none",
     "[cursor:var(--cursor-interactive)]",
     "transition-[transform,box-shadow] duration-250 ease-out motion-reduce:transition-none",
-  ].join(" "),
+    ].join(""),
   variants: {
     isSelected: {
-      true: "",
-      false: "",
-    },
-    isHovered: {
-      true: "bg-default",
-      false: "",
+      true: "bg-accent-soft",
     },
     isPressed: {
       true: "scale-[0.98]",
-      false: "",
     },
     isDisabled: {
       true: "status-disabled",
-      false: "",
     },
   },
   defaultVariants: {
@@ -73,6 +65,13 @@ export const gridListItemStyles = tv({
     isPressed: false,
     isDisabled: false,
   },
+  compoundVariants: [
+    {
+      isHovered: true,
+      isSelected: false,
+      class: "bg-default",
+    },
+  ],
 });
 
 export function StyledGridListItem({

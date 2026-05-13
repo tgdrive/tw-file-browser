@@ -29,12 +29,13 @@ export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {
 	return (
 		<div
 			className={clsx(
-				"items-center relative grid",
-				"text-inherit grid-cols-6 p-2 gap-2",
+				"relative grid items-center w-full min-w-0",
+				"text-inherit gap-3 px-2 py-2",
+				"grid-cols-[minmax(0,1fr)_96px_136px] sm:grid-cols-[minmax(0,1fr)_110px_180px]",
 			)}
 			{...fileEntryHtmlProps}
 		>
-			<div className="self-center inline-flex items-center gap-2 col-span-6 sm:col-span-3 xl:col-span-4">
+			<div className="self-center inline-flex items-center gap-2 min-w-0 col-span-3 sm:col-span-1">
 				<div
 					className={clsx(
 						"size-8 grid rounded-lg shrink-0",
@@ -52,13 +53,13 @@ export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {
 						fixedWidth={true}
 					/>
 				</div>
-				<FileEntryName className="truncate" file={file} />
+				<FileEntryName className="truncate min-w-0" file={file} />
 			</div>
 
-			<span className="col-span-2 sm:col-span-1">
+			<span className="justify-self-start text-left tabular-nums text-muted whitespace-nowrap text-xs sm:text-sm col-start-2">
 				{fileSizeString || "0 B"}
 			</span>
-			<span className="col-span-4 sm:col-span-2 xl:col-span-1">
+			<span className="justify-self-start text-left tabular-nums text-muted whitespace-nowrap truncate text-xs sm:text-sm col-start-3">
 				{fileModDateString}
 			</span>
 		</div>
