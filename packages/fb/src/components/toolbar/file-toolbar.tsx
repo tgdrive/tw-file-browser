@@ -1,7 +1,5 @@
 import React, { type ReactElement, useMemo } from "react";
-import { useSelector } from "react-redux";
-
-import { selectToolbarItems } from "@/redux/selectors";
+import { useFbStore } from "@/store/store";
 import { SmartToolbarButton } from "./toolbar-button";
 import { ToolbarDropdown } from "./toolbar-dropdown";
 import { ToolbarInfo } from "./toolbar-info";
@@ -13,7 +11,7 @@ interface FileToolbarProps {
 }
 
 export const FileToolbar = ({ className }: FileToolbarProps) => {
-  const toolbarItems = useSelector(selectToolbarItems);
+  const toolbarItems = useFbStore((s) => s.state.toolbarItems);
 
   const toolbarItemComponents = useMemo(() => {
     const components: ReactElement[] = [];

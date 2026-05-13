@@ -1,8 +1,5 @@
 import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { selectSelectionMode, selectSelectionSize } from "@/redux/selectors";
-import { reduxActions } from "@/redux/reducers";
-import { FbDispatch } from "@/types/redux.types";
+import { useFbStore, useFbStoreApi } from "@/store/store";
 import { FbIconName } from "@/util/enums";
 import { Button } from "@heroui/react";
 import { FbIcon } from "../shared/fb-icon";
@@ -13,13 +10,13 @@ export interface ToolbarInfoProps {
 }
 
 export const ToolbarInfo = React.memo(({ className }: ToolbarInfoProps) => {
-  const selectionSize = useSelector(selectSelectionSize);
-  const selectionMode = useSelector(selectSelectionMode);
-  const dispatch: FbDispatch = useDispatch();
+  const storeApi = useFbStoreApi();
+  const selectionSize = useFbStore((s) => Object.keys(s.state.selectionMap).length);
+  const selectionMode = useFbStore((s) => s.state.selectionMode);
 
-  const clearSelection = useCallback(
-    () => dispatch(reduxActions.clearSelection()),
-    [],
+  const handleClearSelection = useCallback(
+    () => storeApi.getState().actions.clearSelection(),
+    [storeApi],
   );
 
   const enabled = (selectionSize && selectionSize > 0) || selectionMode;
@@ -38,7 +35,7 @@ export const ToolbarInfo = React.memo(({ className }: ToolbarInfoProps) => {
           className="text-inherit"
           variant="tertiary"
           isIconOnly
-          onPress={clearSelection}
+          onPress={handleClearSelection}
         >
           <FbIcon icon={FbIconName.cross} fixedWidth={true} />
         </Button>

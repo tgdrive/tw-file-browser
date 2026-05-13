@@ -1,11 +1,12 @@
-import { MaybePromise, Nullable } from "tsdef";
+import { MaybePromise, Nullable } from "@/util/ts-types";
 
 import { FileActionState } from "./action-handler.types";
 import { FileViewConfig } from "./file-view.types";
 import { FileFilter, FileMap } from "./file.types";
-import { FbDispatch, RootState } from "./redux.types";
 import { FileSortKeySelector } from "./sort.types";
 import type { FbIconName, CustomVisibilityState } from "@/util/enums";
+import type { StoreApi } from "zustand";
+import type { FbState, FbStore } from "@/store/store";
 export interface FileAction {
   /**
    * Unique file action ID. If you set the action ID to one of the built-in Fb
@@ -125,9 +126,9 @@ export type FileSelectionTransform = (data: {
 export type FileActionEffect<Action extends FileAction = any> = (data: {
   action: Action;
   payload: Action["__payloadType"];
-  state: FileActionState<{}>; // extra state is empty on purpose
-  reduxDispatch: FbDispatch;
-  getReduxState: () => RootState;
+  state: FileActionState<{}>;
+  getState: () => FbState;
+  getStore: () => StoreApi<FbStore>;
 }) => MaybePromise<undefined | boolean | void>;
 
 export type FileActionMap = { [actonId: string]: FileAction };

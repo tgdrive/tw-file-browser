@@ -1,25 +1,18 @@
 import React, { memo, Key, useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { FileActionGroup } from "@/types/action-menus.types";
 import { ToolbarButton, type ToolbarButtonProps } from "./toolbar-button";
 import { Dropdown, Label } from "@heroui/react";
 import { FbIcon } from "../shared/fb-icon";
 import { useFileActionProps } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
-import { useParamSelector } from "@/redux/store";
-import {
-  selectFileActionData,
-  selectFileActionMap,
-} from "@/redux/selectors";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
-import type { FbDispatch } from "@/types/redux.types";
 import { useLocalizedFileActionGroup } from "@/util/i18n";
+import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 
 export type ToolbarDropdownProps = FileActionGroup;
 
 const DropdownItemContent = memo(
   ({ fileActionId }: { fileActionId: string }) => {
-    const action = useParamSelector(selectFileActionData, fileActionId);
+    const action = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
     const { icon } = useFileActionProps(fileActionId);
     const { buttonName } = useLocalizedFileActionStrings(action);
 
@@ -38,19 +31,19 @@ DropdownItemContent.displayName = "DropdownItemContent";
 export const ToolbarDropdown = memo((props: ToolbarDropdownProps) => {
   const { name, icon, fileActionIds, tooltip } = props;
   const [open, setOpen] = useState(false);
-  const dispatch: FbDispatch = useDispatch();
-  const fileActionMap = useSelector(selectFileActionMap);
+  const fileActionMap = useFbStore(useShallow((s) => s.state.fileActionMap));
+  const storeApi = useFbStoreApi();
   const localizedName = useLocalizedFileActionGroup(name);
 
   const handleAction = useCallback(
     (key: Key) => {
       const fileAction = fileActionMap[key as string];
       if (fileAction) {
-        dispatch(thunkRequestFileAction(fileAction, undefined));
+        storeApi.getState().actions.requestFileAction(fileAction, undefined);
       }
       setOpen(false);
     },
-    [dispatch, fileActionMap],
+    [fileActionMap, storeApi],
   );
 
   const triggerProps: ToolbarButtonProps = {

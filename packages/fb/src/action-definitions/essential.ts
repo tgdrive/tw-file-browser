@@ -1,149 +1,63 @@
-import { reduxActions } from "@/redux/reducers";
-import {
-  getFileData,
-  getIsFileSelected,
-  selectDisableSelection,
-  selectors,
-  selectParentFolder,
-} from "@/redux/selectors";
-import { reduxThunks } from "@/redux/thunks";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
 import type {
-  ChangeSelectionPayload,
-  MoveFilesPayload,
-  OpenFileContextMenuPayload,
-  OpenFilesPayload,
-  MouseClickFilePayload,
+  ChangeSelectionPayload, MoveFilesPayload,
+  OpenFileContextMenuPayload, OpenFilesPayload, MouseClickFilePayload,
 } from "@/types/action-payloads.types";
 import { FileHelper } from "@/util/file-helper";
 import { defineFileAction } from "@/util/helpers";
-import { Logger } from "@/util/logger";
-import { FbActions } from "./index";
 import { FbIconName } from "@/util/enums";
+import { FbActions } from "./index";
 
 export const EssentialActions = {
-  /**
-   * Action that is dispatched when the user clicks on a file entry using their mouse.
-   * Both single clicks and double clicks trigger this action.
-   */
   MouseClickFile: defineFileAction(
     {
       id: "mouse_click_file",
       __payloadType: {} as MouseClickFilePayload,
     } as const,
-    ({ payload, reduxDispatch, getReduxState }) => {
+    ({ payload, getState, getStore }) => {
       if (payload.clickType === "double") {
         if (FileHelper.isOpenable(payload.file)) {
-          reduxDispatch(
-            thunkRequestFileAction(FbActions.OpenFiles, {
-              targetFile: payload.file,
-              files: [payload.file],
-            }),
-          );
+          getStore().getState().actions.requestFileAction(FbActions.OpenFiles, {
+            targetFile: payload.file,
+            files: [payload.file],
+          });
         }
-      } else {
-        // We're dealing with a single click
+        return false;
+      }
+      const state = getState();
+      const store = getStore();
+      const { file, fileDisplayIndex } = payload;
+      const a = store.getState().actions;
 
-        const state = getReduxState();
-        const disableSelection = selectDisableSelection(state);
-        if (FileHelper.isSelectable(payload.file) && !disableSelection) {
-          if (payload.ctrlKey || state.selectionMode) {
-            // Multiple selection
-            reduxDispatch(
-              reduxActions.toggleSelection({
-                fileId: payload.file.id,
-                exclusive: false,
-              }),
-            );
-            reduxDispatch(
-              reduxActions.setLastClickIndex({
-                index: payload.fileDisplayIndex,
-                fileId: payload.file.id,
-              }),
-            );
-          } else if (payload.shiftKey) {
-            // Range selection
-            const lastClickIndex = selectors.getLastClickIndex(getReduxState());
-            if (typeof lastClickIndex === "number") {
-              // We have the index of the previous click
-              let rangeStart = lastClickIndex;
-              let rangeEnd = payload.fileDisplayIndex;
-              if (rangeStart > rangeEnd) {
-                [rangeStart, rangeEnd] = [rangeEnd, rangeStart];
-              }
-
-              reduxDispatch(reduxThunks.selectRange({ rangeStart, rangeEnd }));
-            } else {
-              // Since we can't do a range selection, do a
-              // multiple selection
-              reduxDispatch(
-                reduxActions.toggleSelection({
-                  fileId: payload.file.id,
-                  exclusive: false,
-                }),
-              );
-              reduxDispatch(
-                reduxActions.setLastClickIndex({
-                  index: payload.fileDisplayIndex,
-                  fileId: payload.file.id,
-                }),
-              );
-            }
-          } else {
-            // Exclusive selection
-            reduxDispatch(
-              reduxActions.toggleSelection({
-                fileId: payload.file.id,
-                exclusive: true,
-              }),
-            );
-            reduxDispatch(
-              reduxActions.setLastClickIndex({
-                index: payload.fileDisplayIndex,
-                fileId: payload.file.id,
-              }),
-            );
-          }
-        } else {
-          if (!payload.ctrlKey && !disableSelection) {
-            reduxDispatch(reduxActions.clearSelection());
-          }
-          reduxDispatch(
-            reduxActions.setLastClickIndex({
-              index: payload.fileDisplayIndex,
-              fileId: payload.file.id,
-            }),
-          );
+      if (payload.shiftKey) {
+        const lci = state.lastClickIndex;
+        if (lci !== null && lci !== fileDisplayIndex) {
+          const start = Math.min(lci, fileDisplayIndex);
+          const end = Math.max(lci, fileDisplayIndex);
+          const ids = state.displayFileIds
+            .slice(start, end + 1)
+            .filter((id) => id && FileHelper.isSelectable(state.fileMap[id])) as string[];
+          if (payload.ctrlKey) for (const id of ids) a.selectFiles({ fileIds: [id], reset: false });
+          else a.selectFiles({ fileIds: ids, reset: true });
+          a.setLastClickIndex({ index: fileDisplayIndex, fileId: file.id });
+          return false;
         }
       }
+
+      if (payload.ctrlKey) a.toggleSelection({ fileId: file.id, exclusive: false });
+      else a.selectFiles({ fileIds: [file.id], reset: true });
+      a.setLastClickIndex({ index: fileDisplayIndex, fileId: file.id });
+      return false;
     },
   ),
-  /**
-   * Action that is dispatched when user moves files from one folder to another,
-   * usually by dragging & dropping some files into the folder.
-   */
-  MoveFiles: defineFileAction({
-    id: "move_files",
-    __payloadType: {} as MoveFilesPayload,
-  } as const),
-  /**
-   * Action that is dispatched when the selection changes for any reason.
-   */
-  ChangeSelection: defineFileAction({
-    id: "change_selection",
-    __payloadType: {} as ChangeSelectionPayload,
-  } as const),
-  /**
-   * Action that is dispatched when user wants to open some files. This action is
-   * often triggered by other actions.
-   */
-  OpenFiles: defineFileAction({
-    id: "open_files",
-    __payloadType: {} as OpenFilesPayload,
-  } as const),
-  /**
-   * Action that is triggered when user wants to go up a directory.
-   */
+
+  OpenFiles: defineFileAction(
+    { id: "open_files", __payloadType: {} as OpenFilesPayload } as const,
+    ({ getState }) => {
+      if (getState().disableSelection) return true;
+      return false;
+    },
+  ),
+
   OpenParentFolder: defineFileAction(
     {
       id: "open_parent_folder",
@@ -155,68 +69,71 @@ export const EssentialActions = {
         icon: FbIconName.openParentFolder,
         iconOnly: true,
       },
+      __payloadType: undefined,
     } as const,
-    ({ reduxDispatch, getReduxState }) => {
-      const reduxState = getReduxState();
-      const parentFolder = selectParentFolder(reduxState);
+    ({ getState, getStore }) => {
+      const chain = getState().folderChain;
+      const parentFolder = chain.length > 1 ? chain[chain.length - 2] : null;
       if (FileHelper.isOpenable(parentFolder)) {
-        reduxDispatch(
-          thunkRequestFileAction(FbActions.OpenFiles, {
-            targetFile: parentFolder,
-            files: [parentFolder],
-          }),
-        );
-      } else if (!reduxState.forceEnableOpenParent) {
-        Logger.warn(
-          "Open parent folder effect was triggered even though the parent folder" +
-            " is not openable. This indicates a bug in presentation components.",
-        );
+        getStore().getState().actions.requestFileAction(FbActions.OpenFiles, {
+          targetFile: parentFolder,
+          files: [parentFolder],
+        });
       }
     },
   ),
-  /**
-   * Action that is dispatched when user opens the context menu, either by right click
-   * on something or using the context menu button on their keyboard.
-   */
-  OpenFileContextMenu: defineFileAction(
+  MoveFiles: defineFileAction({ id: "move_files", __payloadType: {} as MoveFilesPayload } as const),
+
+  ChangeSelection: defineFileAction(
+    { id: "change_selection", __payloadType: {} as ChangeSelectionPayload } as const,
+    ({ payload, getStore }) => {
+      const a = getStore().getState().actions;
+      if (payload.selection.size === 0) a.clearSelection();
+      else a.selectFiles({ fileIds: Array.from(payload.selection), reset: true });
+      return true;
+    },
+  ),
+
+  SetSelection: defineFileAction({ id: "set_selection", __payloadType: undefined } as const),
+
+  SelectMode: defineFileAction(
     {
-      id: "open_file_context_menu",
-      __payloadType: {} as OpenFileContextMenuPayload,
+      id: "select_mode",
+      button: {
+        name: "Select mode",
+        toolbar: true,
+        icon: FbIconName.select,
+        iconOnly: true,
+      },
+      __payloadType: undefined,
     } as const,
-    ({ payload, reduxDispatch, getReduxState }) => {
-      // TODO: Check if the context menu component is actually enabled. There is a
-      //  chance it doesn't matter if it is enabled or not - if it is not mounted,
-      //  the action will simply have no effect. It also allows users to provide
-      //  their own components - however, users could also flip the "context menu
-      //  component mounted" switch...
-      const triggerFile = getFileData(getReduxState(), payload.triggerFileId);
-      if (triggerFile) {
-        const fileSelected = getIsFileSelected(getReduxState(), triggerFile);
-        if (!fileSelected) {
-          // If file is selected, we leave the selection as is. If it is not
-          // selected, it means user right clicked the file with no selection.
-          // We simulate the Windows Explorer/Nautilus behaviour of moving
-          // selection to this file.
-          if (FileHelper.isSelectable(triggerFile)) {
-            reduxDispatch(
-              reduxActions.selectFiles({
-                fileIds: [payload.triggerFileId],
-                reset: true,
-              }),
-            );
-          } else {
-            reduxDispatch(reduxActions.clearSelection());
-          }
+    ({ getStore }) => {
+      getStore().getState().actions.setSelectionMode(true);
+    },
+  ),
+
+  PasteFiles: defineFileAction({ id: "paste_files", __payloadType: undefined } as const),
+  RenameFile: defineFileAction({ id: "rename_file", __payloadType: undefined } as const),
+  CutFiles: defineFileAction({ id: "cut_files", __payloadType: undefined } as const),
+  DeleteFiles: defineFileAction({ id: "delete_files", __payloadType: undefined } as const),
+  UploadFiles: defineFileAction({ id: "upload_files", __payloadType: undefined } as const),
+  CreateFolder: defineFileAction({ id: "create_folder", __payloadType: undefined } as const),
+  DownloadFiles: defineFileAction({ id: "download_files", __payloadType: undefined } as const),
+
+  OpenFileContextMenu: defineFileAction(
+    { id: "open_file_context_menu", __payloadType: {} as OpenFileContextMenuPayload } as const,
+    ({ payload, getState, getStore }) => {
+      const state = getState();
+      const a = getStore().getState().actions;
+      const tf = payload.triggerFileId ? state.fileMap[payload.triggerFileId] ?? null : null;
+      if (tf) {
+        if (!state.selectionMap[payload.triggerFileId!]) {
+          if (FileHelper.isSelectable(tf)) a.selectFiles({ fileIds: [payload.triggerFileId!], reset: true });
+          else a.clearSelection();
         }
       }
-
-      reduxDispatch(
-        reduxActions.showContextMenu({
-          triggerFileId: payload.triggerFileId,
-          mouseX: payload.clientX - 2,
-          mouseY: payload.clientY - 4,
-        }),
-      );
+      a.showContextMenu({ triggerFileId: payload.triggerFileId ?? null, mouseX: payload.clientX, mouseY: payload.clientY });
+      return true;
     },
   ),
 };

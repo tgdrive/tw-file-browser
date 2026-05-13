@@ -1,26 +1,15 @@
 import React, { memo, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
-import { reduxActions } from "@/redux/reducers";
-import {
-  selectContextMenuConfig,
-  selectContextMenuItems,
-  selectFileActionMap,
-} from "@/redux/selectors";
-
+import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 import { useContextMenuDismisser } from "./file-context-menu.hooks";
-import type { FbDispatch } from "@/types/redux.types";
 import { Dropdown, Label, Kbd } from "@heroui/react";
 import { useFileActionProps } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
-import { useParamSelector } from "@/redux/store";
-import { selectFileActionData } from "@/redux/selectors";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
 import { FbIcon } from "../shared/fb-icon";
 
 const ContextMenuItemContent = memo(
   ({ fileActionId }: { fileActionId: string }) => {
-    const action = useParamSelector(selectFileActionData, fileActionId);
+    const action = useFbStore((s) => s.state.fileActionMap[fileActionId]);
     const { icon } = useFileActionProps(fileActionId);
     const { buttonName } = useLocalizedFileActionStrings(action);
     const hotkey = action?.hotkeys?.[0];
@@ -43,19 +32,19 @@ const ContextMenuItemContent = memo(
 ContextMenuItemContent.displayName = "ContextMenuItemContent";
 
 export const FileContextMenu = memo(() => {
-  const dispatch: FbDispatch = useDispatch();
+  const storeApi = useFbStoreApi();
   const hideContextMenu = useContextMenuDismisser();
-  const fileActionMap = useSelector(selectFileActionMap);
+  const fileActionMap = useFbStore(useShallow((s) => s.state.fileActionMap));
 
   useEffect(() => {
-    dispatch(reduxActions.setContextMenuMounted(true));
+    storeApi.getState().actions.setContextMenuMounted(true);
     return () => {
-      dispatch(reduxActions.setContextMenuMounted(false));
+      storeApi.getState().actions.setContextMenuMounted(false);
     };
-  }, [dispatch]);
+  }, [storeApi]);
 
-  const contextMenuConfig = useSelector(selectContextMenuConfig);
-  const contextMenuItems = useSelector(selectContextMenuItems);
+  const contextMenuConfig = useFbStore((s) => s.state.contextMenuConfig);
+  const contextMenuItems = useFbStore(useShallow((s) => s.state.contextMenuItems));
 
   const anchorPosition = useMemo(
     () =>
@@ -82,7 +71,7 @@ export const FileContextMenu = memo(() => {
   const handleAction = (key: React.Key) => {
     const fileAction = fileActionMap[key as string];
     if (fileAction) {
-      dispatch(thunkRequestFileAction(fileAction, undefined));
+      storeApi.getState().actions.requestFileAction(fileAction, undefined);
     }
     hideContextMenu();
   };

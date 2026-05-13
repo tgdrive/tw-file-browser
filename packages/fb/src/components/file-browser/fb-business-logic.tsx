@@ -1,126 +1,177 @@
-import React from "react";
-
-import { reduxActions } from "@/redux/reducers";
-import { initialRootState } from "@/redux/state";
-import { useDTE, usePropReduxUpdate } from "@/redux/store";
-import {
-	thunkActivateSortAction,
-	thunkUpdateDefaultFileViewActionId,
-	thunkUpdateRawFileActions,
-} from "@/redux/thunks/file-actions.thunks";
-import type {
-	FileBrowserHandle,
-	FileBrowserProps,
-} from "@/types/file-browser.types";
-import { defaultConfig } from "@/util/default-config";
-import { useFileBrowserHandle } from "@/util/file-browser-handle";
-import { getValueOrFallback } from "@/util/helpers";
+import React, { useEffect } from "react";
 import deepmerge from "deepmerge";
+import { useFbStoreApi } from "@/store/store";
+import type { FileBrowserHandle, FileBrowserProps } from "@/types/file-browser.types";
+import { defaultConfig } from "@/util/default-config";
+import { getValueOrFallback } from "@/util/helpers";
+import { useFileBrowserHandle } from "@/util/file-browser-handle";
+
+const useStoreEffect = (action: (api: ReturnType<typeof useFbStoreApi>) => void, deps: any[]) => {
+  const store = useFbStoreApi();
+  useEffect(() => {
+    action(store);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store, ...deps]);
+};
 
 export const FbBusinessLogicInner = React.memo(
-	React.forwardRef<FileBrowserHandle, FileBrowserProps>((props, ref) => {
-		usePropReduxUpdate(
-			reduxActions.setFileActionGroup,
-			deepmerge(props.fileActionGroups!, defaultConfig.fileActionGroups!),
-		);
+  React.forwardRef<FileBrowserHandle, FileBrowserProps>((props, ref) => {
+    const store = useFbStoreApi();
 
-		usePropReduxUpdate(
-			reduxActions.setRawFiles,
-			props.files ?? initialRootState.rawFiles,
-		);
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setFileActionGroup(
+          deepmerge(props.fileActionGroups!, defaultConfig.fileActionGroups!),
+        ),
+      [props.fileActionGroups],
+    );
 
-		usePropReduxUpdate(reduxActions.setRawFolderChain, props.folderChain);
-		useDTE(
-			thunkUpdateRawFileActions,
-			getValueOrFallback(props.fileActions, defaultConfig.fileActions),
-			props.breakpoint,
-			getValueOrFallback(
-				props.disableDefaultFileActions,
-				defaultConfig.disableDefaultFileActions,
-			),
-			getValueOrFallback(
-				props.disableEssentailFileActions,
-				defaultConfig.disableEssentailFileActions,
-			),
-		);
-		useDTE(
-			reduxActions.setExternalFileActionHandler,
-			getValueOrFallback(props.onFileAction, defaultConfig.onFileAction) as any,
-		);
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setRawFiles(
+          props.files ?? [],
+        ),
+      [props.files],
+    );
 
-		useDTE(
-			reduxActions.setSelectionDisabled,
-			getValueOrFallback(
-				props.disableSelection,
-				defaultConfig.disableSelection,
-				"boolean",
-			),
-		);
-		useDTE(
-			thunkActivateSortAction,
-			getValueOrFallback(
-				props.defaultSortActionId,
-				defaultConfig.defaultSortActionId,
-			),
-			getValueOrFallback(
-				props.defaultSortOrder,
-				defaultConfig.defaultSortOrder,
-			),
-		);
-		useDTE(
-			thunkUpdateDefaultFileViewActionId,
-			getValueOrFallback(
-				props.defaultFileViewActionId,
-				defaultConfig.defaultFileViewActionId,
-				"string",
-			),
-		);
+    useStoreEffect(
+      (s) => s.getState().actions.setRawFolderChain(props.folderChain),
+      [props.folderChain],
+    );
 
-		useDTE(
-			reduxActions.setThumbnailGenerator,
-			getValueOrFallback(
-				props.thumbnailGenerator,
-				defaultConfig.thumbnailGenerator,
-			),
-		);
-		useDTE(
-			reduxActions.setDoubleClickDelay,
-			getValueOrFallback(
-				props.doubleClickDelay,
-				defaultConfig.doubleClickDelay,
-				"number",
-			),
-		);
-		useDTE(
-			reduxActions.setForceEnableOpenParent,
-			getValueOrFallback(
-				props.forceEnableOpenParent,
-				defaultConfig.forceEnableOpenParent,
-				"boolean",
-			),
-		);
-		useDTE(
-			reduxActions.setHideToolbarInfo,
-			getValueOrFallback(
-				props.hideToolbarInfo,
-				defaultConfig.hideToolbarInfo,
-				"boolean",
-			),
-		);
-		useDTE(
-			reduxActions.setClearSelectionOnOutsideClick,
-			getValueOrFallback(
-				props.clearSelectionOnOutsideClick,
-				defaultConfig.clearSelectionOnOutsideClick,
-				"boolean",
-			),
-		);
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.updateRawFileActions(
+          getValueOrFallback(props.fileActions, defaultConfig.fileActions),
+          props.breakpoint,
+          getValueOrFallback(
+            props.disableDefaultFileActions,
+            defaultConfig.disableDefaultFileActions,
+          ),
+          getValueOrFallback(
+            props.disableEssentailFileActions,
+            defaultConfig.disableEssentailFileActions,
+          ),
+        ),
+      [
+        props.fileActions,
+        props.breakpoint,
+        props.disableDefaultFileActions,
+        props.disableEssentailFileActions,
+      ],
+    );
 
-		// ==== Setup the imperative handle for external use
-		useFileBrowserHandle(ref);
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setExternalFileActionHandler(
+          getValueOrFallback(props.onFileAction, defaultConfig.onFileAction) as any,
+        ),
+      [props.onFileAction],
+    );
 
-		return null;
-	}),
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setSelectionDisabled(
+          getValueOrFallback(
+            props.disableSelection,
+            defaultConfig.disableSelection,
+            "boolean",
+          ),
+        ),
+      [props.disableSelection],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.activateSortAction(
+          getValueOrFallback(
+            props.defaultSortActionId,
+            defaultConfig.defaultSortActionId,
+          ),
+          getValueOrFallback(
+            props.defaultSortOrder,
+            defaultConfig.defaultSortOrder,
+          ),
+        ),
+      [props.defaultSortActionId, props.defaultSortOrder],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.updateDefaultFileViewActionId(
+          getValueOrFallback(
+            props.defaultFileViewActionId,
+            defaultConfig.defaultFileViewActionId,
+            "string",
+          ),
+        ),
+      [props.defaultFileViewActionId],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setThumbnailGenerator(
+          getValueOrFallback(
+            props.thumbnailGenerator,
+            defaultConfig.thumbnailGenerator,
+          ),
+        ),
+      [props.thumbnailGenerator],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setDoubleClickDelay(
+          getValueOrFallback(
+            props.doubleClickDelay,
+            defaultConfig.doubleClickDelay,
+            "number",
+          ),
+        ),
+      [props.doubleClickDelay],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setForceEnableOpenParent(
+          getValueOrFallback(
+            props.forceEnableOpenParent,
+            defaultConfig.forceEnableOpenParent,
+            "boolean",
+          ),
+        ),
+      [props.forceEnableOpenParent],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setHideToolbarInfo(
+          getValueOrFallback(
+            props.hideToolbarInfo,
+            defaultConfig.hideToolbarInfo,
+            "boolean",
+          ),
+        ),
+      [props.hideToolbarInfo],
+    );
+
+    useStoreEffect(
+      (s) =>
+        s.getState().actions.setClearSelectionOnOutsideClick(
+          getValueOrFallback(
+            props.clearSelectionOnOutsideClick,
+            defaultConfig.clearSelectionOnOutsideClick,
+            "boolean",
+          ),
+        ),
+      [props.clearSelectionOnOutsideClick],
+    );
+
+    // Setup imperative handle
+    useFileBrowserHandle(ref);
+
+    return null;
+  }),
 );
 FbBusinessLogicInner.displayName = "FbBusinessLogicInner";
 

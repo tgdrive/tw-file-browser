@@ -4,10 +4,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
-import { Nullable } from "tsdef";
+import { Nullable } from "@/util/ts-types";
 
-import { selectThumbnailGenerator } from "@/redux/selectors";
+import { useFbStore } from "@/store/store";
 import { FileData } from "@/types/file.types";
 import { FbIconName } from "@/util/enums";
 import { FileHelper } from "@/util/file-helper";
@@ -109,7 +108,7 @@ export const useFileNameComponent = (file: Nullable<FileData>) => {
 };
 
 export const useThumbnailUrl = (file: Nullable<FileData>) => {
-  const thumbnailGenerator = useSelector(selectThumbnailGenerator);
+  const thumbnailGenerator = useFbStore((s) => s.state.thumbnailGenerator);
   const [thumbnailUrl, setThumbnailUrl] = useState<Nullable<string>>(null);
   const [thumbnailLoading, setThumbnailLoading] = useState<boolean>(false);
   const loadingAttempts = useRef(0);

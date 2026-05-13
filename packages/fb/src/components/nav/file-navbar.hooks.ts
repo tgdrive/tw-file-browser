@@ -1,12 +1,9 @@
 import { useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type { Nullable } from "tsdef";
+import type { Nullable } from "@/util/ts-types";
 
 import { FbActions } from "@/action-definitions/index";
-import { selectFolderChain } from "@/redux/selectors";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
+import { useFbStore, useFbStoreApi } from "@/store/store";
 import type { FileData } from "@/types/file.types";
-import type { FbDispatch } from "@/types/redux.types";
 import { FileHelper } from "@/util/file-helper";
 
 export interface FolderChainItem {
@@ -16,8 +13,8 @@ export interface FolderChainItem {
 }
 
 export const useFolderChainItems = (): FolderChainItem[] => {
-	const folderChain = useSelector(selectFolderChain);
-	const dispatch: FbDispatch = useDispatch();
+	const storeApi = useFbStoreApi();
+	const folderChain = useFbStore((s) => s.state.folderChain);
 
 	const folderChainItems = useMemo(() => {
 		const items: FolderChainItem[] = [];
@@ -32,15 +29,16 @@ export const useFolderChainItems = (): FolderChainItem[] => {
 					!FileHelper.isOpenable(file) || i === folderChain.length - 1
 						? undefined
 						: () =>
-								dispatch(
-									thunkRequestFileAction(FbActions.OpenFiles, {
-										targetFile: file,
-										files: [file],
-									}),
-								),
+            storeApi.getState().actions.requestFileAction(
+                FbActions.OpenFiles,
+                {
+                    targetFile: file,
+                    files: [file],
+                },
+            ),
 			});
 		}
 		return items;
-	}, [dispatch, folderChain]);
+	}, [storeApi, folderChain]);
 	return folderChainItems;
 };

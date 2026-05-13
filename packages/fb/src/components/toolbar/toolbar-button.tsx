@@ -1,9 +1,8 @@
 import React, { forwardRef, memo } from "react";
-import type { Nullable } from "tsdef";
+import type { Nullable } from "@/util/ts-types";
 
-import { selectFileActionData } from "@/redux/selectors";
-import { useParamSelector } from "@/redux/store";
 import { FbIconName, CustomVisibilityState } from "@/util/enums";
+import { useFbStore, useShallow } from "@/store/store";
 import { useFileActionProps, useFileActionTrigger } from "@/util/file-actions";
 import { useLocalizedFileActionStrings } from "@/util/i18n";
 import { Button, type ButtonProps } from "@heroui/react";
@@ -74,7 +73,7 @@ export interface SmartToolbarButtonProps {
 
 export const SmartToolbarButton = memo(
   ({ fileActionId, ...props }: SmartToolbarButtonProps) => {
-    const action = useParamSelector(selectFileActionData, fileActionId);
+    const action = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
     const triggerAction = useFileActionTrigger(fileActionId);
     const { icon, active, disabled } = useFileActionProps(fileActionId);
     const { buttonName, buttonTooltip } = useLocalizedFileActionStrings(action);

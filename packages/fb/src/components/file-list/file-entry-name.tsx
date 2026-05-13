@@ -1,5 +1,5 @@
 import React from "react";
-import { Nullable } from "tsdef";
+import { Nullable } from "@/util/ts-types";
 
 import { FileData } from "@/types/file.types";
 import {

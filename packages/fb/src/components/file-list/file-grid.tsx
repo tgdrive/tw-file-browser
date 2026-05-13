@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useMemo, Key } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import {
   Virtualizer,
@@ -10,35 +9,16 @@ import {
 import type { Selection } from "react-aria-components";
 import { ListBox } from "@heroui/react";
 
-import {
-  selectFileViewConfig,
-  selectors,
-  selectSelectedFileIds,
-  selectFileMap,
-} from "@/redux/selectors";
-import { reduxActions } from "@/redux/reducers";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
 import { FbActions } from "@/action-definitions/index";
 import { FileViewMode } from "@/util/enums";
-import type { FbDispatch } from "@/types/redux.types";
-import { useParamSelector } from "@/redux/store";
-import type { Nullable } from "tsdef";
+import type { Nullable } from "@/util/ts-types";
 import type { FileData } from "@/types/file.types";
+import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 
 import { GridEntry } from "./grid-entry";
 import { ListEntry } from "./list-entry";
 import { FileListEmpty } from "./file-list-empty";
 import { StyledGridList, StyledGridListItem } from "./grid-list-collection";
-
-const selectIsFileSelected =
-  (fileId: Nullable<string>) =>
-  (state: any): boolean =>
-    !!fileId && !!state.selectionMap?.[fileId];
-
-const selectFileDataById =
-  (fileId: Nullable<string>) =>
-  (state: any): Nullable<FileData> =>
-    fileId ? state.fileMap?.[fileId] ?? null : null;
 
 type FileGridItem = {
   id: string;
@@ -53,8 +33,8 @@ const FileItemContent = memo(
     fileId: Nullable<string>;
     viewMode: FileViewMode;
   }) => {
-    const file = useParamSelector(selectFileDataById, fileId);
-    const selected = useParamSelector(selectIsFileSelected, fileId);
+    const file = useFbStore((s) => (fileId ? s.state.fileMap?.[fileId] ?? null : null));
+    const selected = useFbStore((s) => !!fileId && !!s.state.selectionMap?.[fileId]);
 
     if (viewMode === FileViewMode.List) {
       return <ListEntry file={file} selected={selected} />;
@@ -68,13 +48,11 @@ const FileItemContent = memo(
 FileItemContent.displayName = "FileItemContent";
 
 export const FileGrid = memo(() => {
-  const dispatch: FbDispatch = useDispatch();
-  const displayFileIds: (string | null)[] = useSelector(
-    selectors.getDisplayFileIds,
-  );
-  const viewConfig = useSelector(selectFileViewConfig);
-  const selectedFileIds = useSelector(selectSelectedFileIds);
-  const fileMap = useSelector(selectFileMap);
+  const storeApi = useFbStoreApi();
+  const displayFileIds = useFbStore(useShallow((s) => s.state.displayFileIds));
+  const viewConfig = useFbStore((s) => s.state.fileViewConfig);
+  const selectedFileIds = useFbStore(useShallow((s) => Object.keys(s.state.selectionMap)));
+  const fileMap = useFbStore(useShallow((s) => s.state.fileMap));
 
   const viewMode = viewConfig.mode;
 
@@ -94,13 +72,13 @@ export const FileGrid = memo(() => {
   const handleSelectionChange = useCallback(
     (keys: Selection) => {
       if (keys === "all") {
-        dispatch(reduxActions.selectAllFiles());
+        storeApi.getState().actions.selectAllFiles();
         return;
       }
       const fileIds = Array.from(keys) as string[];
-      dispatch(reduxActions.selectFiles({ fileIds, reset: true }));
+      storeApi.getState().actions.selectFiles({ fileIds, reset: true });
     },
-    [dispatch],
+    [storeApi],
   );
 
   const handleAction = useCallback(
@@ -110,18 +88,16 @@ export const FileGrid = memo(() => {
       const index = displayFileIds.indexOf(fileId);
       if (!file) return;
 
-      dispatch(
-        thunkRequestFileAction(FbActions.MouseClickFile, {
-          clickType: "double",
-          file,
-          fileDisplayIndex: index,
-          altKey: false,
-          ctrlKey: false,
-          shiftKey: false,
-        }),
-      );
+      storeApi.getState().actions.requestFileAction(FbActions.MouseClickFile, {
+        clickType: "double",
+        file,
+        fileDisplayIndex: index,
+        altKey: false,
+        ctrlKey: false,
+        shiftKey: false,
+      });
     },
-    [dispatch, displayFileIds, fileMap],
+    [storeApi, displayFileIds, fileMap],
   );
 
   const handleItemContextMenu = useCallback(
@@ -129,15 +105,13 @@ export const FileGrid = memo(() => {
       event.preventDefault();
       event.stopPropagation();
 
-      dispatch(
-        thunkRequestFileAction(FbActions.OpenFileContextMenu, {
-          clientX: event.clientX,
-          clientY: event.clientY,
-          triggerFileId: fileId,
-        }),
-      );
+      storeApi.getState().actions.requestFileAction(FbActions.OpenFileContextMenu, {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        triggerFileId: fileId,
+      });
     },
-    [dispatch],
+    [storeApi],
   );
 
   const handleEmptyAreaPointerDown = useCallback(
@@ -145,9 +119,9 @@ export const FileGrid = memo(() => {
       if (event.button !== 0) return;
       const target = event.target as HTMLElement;
       if (target.closest("[data-file-id]")) return;
-      dispatch(reduxActions.clearSelection());
+      storeApi.getState().actions.clearSelection();
     },
-    [dispatch],
+    [storeApi],
   );
 
   const getTextValue = useCallback(

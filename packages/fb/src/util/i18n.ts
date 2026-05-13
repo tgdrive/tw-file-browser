@@ -4,7 +4,7 @@ import {
   useDateFormatter,
   useLocalizedStringFormatter,
 } from "@react-aria/i18n";
-import { Nullable, Undefinable } from "tsdef";
+import { Nullable, Undefinable } from "@/util/ts-types";
 
 import { FileAction } from "@/types/action.types";
 import { FileData } from "@/types/file.types";

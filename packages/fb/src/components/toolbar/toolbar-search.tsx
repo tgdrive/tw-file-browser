@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useLocalizedStringFormatter } from "@react-aria/i18n";
 
-import { reduxActions } from "@/redux/reducers";
-import { selectSearchString } from "@/redux/selectors";
 import { useDebounce } from "@/util/hooks-helpers";
 import { getI18nId, I18nNamespace } from "@/util/i18n";
-import { FbDispatch } from "@/types/redux.types";
+import { useFbStore, useFbStoreApi } from "@/store/store";
 
 const searchMessages: Record<string, Record<string, string>> = {
   en: {
@@ -29,26 +26,24 @@ export const ToolbarSearch = React.memo(() => {
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
-  const dispatch: FbDispatch = useDispatch();
-  const reduxSearchString = useSelector(selectSearchString);
+  const reduxSearchString = useFbStore((s) => s.state.searchString);
+  const storeApi = useFbStoreApi();
 
   const [localSearchString, setLocalSearchString] = useState(reduxSearchString);
   const [debouncedLocalSearchString] = useDebounce(localSearchString, 50);
 
   useEffect(() => {
-    dispatch(
-      reduxActions.setFocusSearchInput(() => {
-        if (searchInputRef.current) searchInputRef.current.focus();
-      }),
-    );
+    storeApi.getState().actions.setFocusSearchInput(() => {
+      if (searchInputRef.current) searchInputRef.current.focus();
+    });
     return () => {
-      dispatch(reduxActions.setFocusSearchInput(null));
+      storeApi.getState().actions.setFocusSearchInput(null);
     };
-  }, [dispatch]);
+  }, [storeApi]);
 
   useEffect(() => {
-    dispatch(reduxActions.setSearchString(debouncedLocalSearchString));
-  }, [debouncedLocalSearchString, dispatch]);
+    storeApi.getState().actions.setSearchString(debouncedLocalSearchString);
+  }, [debouncedLocalSearchString, storeApi]);
 
   const handleChange = useCallback(
     (event: React.FormEvent<HTMLInputElement>) => {
@@ -60,11 +55,11 @@ export const ToolbarSearch = React.memo(() => {
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Escape") {
         setLocalSearchString("");
-        dispatch(reduxActions.setSearchString(""));
+        storeApi.getState().actions.setSearchString("");
         if (searchInputRef.current) searchInputRef.current.blur();
       }
     },
-    [dispatch],
+    [storeApi],
   );
 
   return (

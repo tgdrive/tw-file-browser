@@ -33,7 +33,6 @@ export const DefaultFileActions = [
   FbActions.ClearSelection,
   FbActions.EnableListView,
   FbActions.EnableGridView,
-  FbActions.EnableTileView,
   FbActions.SortFilesByName,
   FbActions.SortFilesBySize,
   FbActions.SortFilesByDate,

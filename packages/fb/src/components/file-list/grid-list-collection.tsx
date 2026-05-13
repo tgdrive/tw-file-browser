@@ -52,6 +52,10 @@ export const gridListItemStyles = tv({
     isSelected: {
       true: "bg-accent-soft",
     },
+    isHovered: {
+      true: "",
+      false: "",
+    },
     isPressed: {
       true: "scale-[0.98]",
     },

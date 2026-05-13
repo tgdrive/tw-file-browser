@@ -1,29 +1,17 @@
 import { useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Nullable } from "tsdef";
+import { Nullable } from "@/util/ts-types";
 
 import { FbActions } from "@/action-definitions/index";
-import {
-  selectFileActionData,
-  selectFileViewConfig,
-  selectForceEnableOpenParent,
-  selectOptionValue,
-  selectParentFolder,
-  selectSelectedFilesForActionCount,
-  selectSortActionId,
-  selectSortOrder,
-} from "@/redux/selectors";
-import { useParamSelector } from "@/redux/store";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
+import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 import { FbIconName, CustomVisibilityState, SortOrder } from "@/util/enums";
 import { FileHelper } from "./file-helper";
 
 export const useFileActionTrigger = (fileActionId: string) => {
-  const dispatch: any = useDispatch();
-  const fileAction = useParamSelector(selectFileActionData, fileActionId);
+  const storeApi = useFbStoreApi();
+  const fileAction = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
   return useCallback(
-    () => dispatch(thunkRequestFileAction(fileAction, undefined)),
-    [dispatch, fileAction],
+    () => storeApi.getState().actions.requestFileAction(fileAction, undefined),
+    [storeApi, fileAction],
   );
 };
 
@@ -34,21 +22,28 @@ export const useFileActionProps = (
   active: boolean;
   disabled: boolean;
 } => {
-  const parentFolder = useSelector(selectParentFolder);
-  const forceEnableOpenParent = useSelector(selectForceEnableOpenParent);
-  const fileViewConfig = useSelector(selectFileViewConfig);
+  const parentFolder = useFbStore((s) => {
+    const fc = s.state.folderChain;
+    return fc.length > 1 ? fc[fc.length - 2] : null;
+  });
+  const forceEnableOpenParent = useFbStore((s) => s.state.forceEnableOpenParent);
+  const fileViewConfig = useFbStore(useShallow((s) => s.state.fileViewConfig));
 
-  const sortActionId = useSelector(selectSortActionId);
-  const sortOrder = useSelector(selectSortOrder);
+  const sortActionId = useFbStore((s) => s.state.sortActionId);
+  const sortOrder = useFbStore((s) => s.state.sortOrder);
 
-  const action = useParamSelector(selectFileActionData, fileActionId);
-  // @ts-ignore
-  const optionValue = useParamSelector(selectOptionValue, action?.option?.id);
-
-  const actionSelectionSize = useParamSelector(
-    selectSelectedFilesForActionCount,
-    fileActionId,
+  const action = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
+  const optionValue = useFbStore(
+    (s) => s.state.optionMap[(action?.option?.id) as string],
   );
+
+  const actionSelectionSize = useFbStore((s) => {
+    const a = s.state.fileActionMap[fileActionId];
+    if (!a || !a.requiresSelection) return undefined;
+    const selectedFiles = Object.keys(s.state.selectionMap).map((id) => s.state.fileMap[id]);
+    const filtered = a.fileFilter ? selectedFiles.filter(a.fileFilter) : selectedFiles;
+    return filtered.length;
+  });
 
   const actionSelectionEmpty = actionSelectionSize === 0;
 

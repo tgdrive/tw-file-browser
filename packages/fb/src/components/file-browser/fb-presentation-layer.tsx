@@ -1,20 +1,12 @@
-import { type ReactNode, useCallback, useMemo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { type ReactNode, useCallback, useRef } from "react";
 import {
   useInteractOutside,
   useKeyboard,
 } from "@react-aria/interactions";
 
-import { reduxActions } from "@/redux/reducers";
-import {
-  selectClearSelectionOnOutsideClick,
-  selectFileActionIds,
-  selectFileActionMap,
-} from "@/redux/selectors";
-import type { FbDispatch } from "@/types/redux.types";
+import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 import { elementIsInsideButton } from "@/util/helpers";
 import { useContextMenuTrigger } from "@/components/context-menu/file-context-menu.hooks";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
 import React from "react";
 
 export interface FbPresentationLayerProps {
@@ -24,12 +16,12 @@ export interface FbPresentationLayerProps {
 export const FbPresentationLayer = ({
   children,
 }: FbPresentationLayerProps) => {
-  const dispatch: FbDispatch = useDispatch();
-  const fileActionIds = useSelector(selectFileActionIds);
-  const fileActionMap = useSelector(selectFileActionMap);
-  const clearSelectionOnOutsideClick = useSelector(
-    selectClearSelectionOnOutsideClick,
+  const storeApi = useFbStoreApi();
+  const clearSelectionOnOutsideClick = useFbStore(
+    (s) => s.state.clearSelectionOnOutsideClick,
   );
+  const fileActionIds = useFbStore(useShallow((s) => s.state.fileActionIds));
+  const fileActionMap = useFbStore(useShallow((s) => s.state.fileActionMap));
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -44,9 +36,9 @@ export const FbPresentationLayer = ({
         ) {
           return;
         }
-        dispatch(reduxActions.clearSelection());
+        storeApi.getState().actions.clearSelection();
       },
-      [dispatch, clearSelectionOnOutsideClick],
+      [clearSelectionOnOutsideClick, storeApi],
     ),
   });
 
@@ -87,12 +79,12 @@ export const FbPresentationLayer = ({
           if (matched) {
             e.preventDefault();
             e.stopPropagation();
-            dispatch(thunkRequestFileAction(action, undefined));
+            storeApi.getState().actions.requestFileAction(action, undefined);
             return;
           }
         }
       },
-      [dispatch, fileActionIds, fileActionMap],
+      [fileActionIds, fileActionMap, storeApi],
     ),
   });
 

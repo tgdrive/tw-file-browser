@@ -1,8 +1,7 @@
 import React, { type ReactNode, useMemo } from "react";
 import { I18nProvider } from "@react-aria/i18n";
-import { Provider as ReduxProvider } from "react-redux";
 import shortid from "shortid";
-import { useFbStore } from "@/redux/store";
+import { FbStoreProvider } from "@/store/store";
 import type {
   FileBrowserHandle,
   FileBrowserProps,
@@ -29,8 +28,6 @@ export const FileBrowser = React.forwardRef<
 
   const fBInstanceId = useStaticValue(() => instanceId ?? shortid.generate());
 
-  const store = useFbStore(fBInstanceId);
-
   const fBComps = (
     <>
       <FbBusinessLogic ref={ref} {...props} />
@@ -41,7 +38,9 @@ export const FileBrowser = React.forwardRef<
   return (
     <I18nProvider locale={i18n?.locale || "en"}>
       <FbFormattersContext.Provider value={formatters}>
-        <ReduxProvider store={store}>{fBComps}</ReduxProvider>
+        <FbStoreProvider instanceId={fBInstanceId}>
+          {fBComps}
+        </FbStoreProvider>
       </FbFormattersContext.Provider>
     </I18nProvider>
   );

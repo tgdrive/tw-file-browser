@@ -1,5 +1,5 @@
 import type { FbIconName } from "@/util/enums";
-import { Nullable, Undefinable } from "tsdef";
+import { Nullable, Undefinable } from "@/util/ts-types";
 
 export interface FileData {
   id: string; // (Required) String that uniquely identifies the file

@@ -1,4 +1,4 @@
-import { Nullable } from "tsdef";
+import { Nullable } from "@/util/ts-types";
 import { FbIconName } from "@/util/enums";
 
 export interface FileActionGroup {

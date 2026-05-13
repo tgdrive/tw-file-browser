@@ -1,5 +1,5 @@
 import React from "react";
-import { Nullable } from "tsdef";
+import { Nullable } from "@/util/ts-types";
 import { FbIconName } from "@/util/enums";
 import { FileThumbnail } from "./file-thumbnail";
 import { FbIcon } from "../shared/fb-icon";

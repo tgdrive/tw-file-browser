@@ -1,15 +1,8 @@
-import { Nullable } from "tsdef";
-
-import { selectFocusSearchInput } from "@/redux/selectors";
-import { thunkRequestFileAction } from "@/redux/thunks/dispatchers.thunks";
-import { FileSelectionTransform } from "@/types/action.types";
-import { FileData } from "@/types/file.types";
-import { FileHelper } from "@/util/file-helper";
+import type { FileSelectionTransform } from "@/types/action.types";
 import { defineFileAction } from "@/util/helpers";
-import { EssentialActions } from "./essential";
-import { OptionIds } from "./option-ids";
 import { FbIconName, FileViewMode } from "@/util/enums";
-import { reduxActions } from "..";
+import { FileSortKeySelector } from "@/types/sort.types";
+import { EssentialActions } from "./essential";
 
 export const DefaultActions = {
   /**
@@ -20,7 +13,7 @@ export const DefaultActions = {
       id: "open_selection",
       hotkeys: ["enter"],
       requiresSelection: true,
-      fileFilter: FileHelper.isOpenable,
+      fileFilter: (file) => !!file?.openable,
       button: {
         name: "Open selection",
         toolbar: true,
@@ -29,15 +22,14 @@ export const DefaultActions = {
         icon: FbIconName.openFiles,
       },
     } as const,
-    ({ state, reduxDispatch }) => {
-      reduxDispatch(
-        thunkRequestFileAction(EssentialActions.OpenFiles, {
-          files: state.selectedFilesForAction!,
-        }),
-      );
+    ({ state, getStore }) => {
+      getStore().getState().actions.requestFileAction(EssentialActions.OpenFiles, {
+        files: state.selectedFilesForAction!,
+      });
       return undefined;
     },
   ),
+
   /**
    * Action that selects all files.
    */
@@ -53,16 +45,15 @@ export const DefaultActions = {
     },
     selectionTransform: (({ fileIds, hiddenFileIds }) => {
       const newSelection = new Set<string>();
-      fileIds.map((fileId) => {
-        // We don't need to check if file is selectable because Fb does
-        // it own checks internally.
+      fileIds.forEach((fileId) => {
         if (!hiddenFileIds.has(fileId)) newSelection.add(fileId);
       });
       return newSelection;
     }) as FileSelectionTransform,
   } as const),
+
   /**
-   * Action that clear the file selection.
+   * Action that clears file selection.
    */
   ClearSelection: defineFileAction({
     id: "clear_selection",
@@ -79,73 +70,51 @@ export const DefaultActions = {
       return new Set<string>();
     }) as FileSelectionTransform,
   } as const),
+
   /**
-   * Action that enables List view.
+   * Action that enables list view.
    */
   EnableListView: defineFileAction({
     id: "enable_list_view",
-    fileViewConfig: {
-      mode: FileViewMode.List,
-    },
+    fileViewConfig: { mode: FileViewMode.List },
     button: {
-      name: "Switch to List",
+      name: "List view",
       toolbar: true,
-      icon: FbIconName.list,
       group: "View",
+      icon: FbIconName.list,
     },
   } as const),
+
   /**
-   * Action that enables Grid view.
+   * Action that enables grid view.
    */
   EnableGridView: defineFileAction({
     id: "enable_grid_view",
-    fileViewConfig: {
-      mode: FileViewMode.Grid,
-    },
+    fileViewConfig: { mode: FileViewMode.Grid },
     button: {
-      name: "Switch to Grid",
+      name: "Grid view",
       toolbar: true,
+      group: "View",
       icon: FbIconName.smallThumbnail,
-      group: "View",
     },
   } as const),
-  /**
-   * Action that enables Grid view.
-   */
-  EnableTileView: defineFileAction({
-    id: "enable_tile_view",
-    fileViewConfig: {
-      mode: FileViewMode.Tile,
-    },
-    button: {
-      name: "Switch to Tile",
-      toolbar: true,
-      icon: FbIconName.mediumThumbnail,
-      group: "View",
-    },
-  } as const),
-  /**
-   * Action that sorts files by `file.name`.
-   */
+
   SortFilesByName: defineFileAction({
     id: "sort_files_by_name",
-    sortKeySelector: (file: Nullable<FileData>) =>
-      file ? file.name.toLowerCase() : undefined,
+    sortKeySelector: ((file) => file?.name) as FileSortKeySelector,
     button: {
       name: "Sort by name",
       toolbar: true,
       group: "Sort",
+      icon: FbIconName.sortNameAsc,
       ascIcon: FbIconName.sortNameAsc,
       descIcon: FbIconName.sortNameDesc,
     },
   } as const),
-  /**
-   * Action that sorts files by `file.size`.
-   */
+
   SortFilesBySize: defineFileAction({
     id: "sort_files_by_size",
-    sortKeySelector: (file: Nullable<FileData>) =>
-      file ? file.size : undefined,
+    sortKeySelector: ((file) => file?.size) as FileSortKeySelector,
     button: {
       name: "Sort by size",
       toolbar: true,
@@ -154,79 +123,59 @@ export const DefaultActions = {
       descIcon: FbIconName.sortSizeDesc,
     },
   } as const),
-  /**
-   * Action that sorts files by `file.modDate`.
-   */
+
   SortFilesByDate: defineFileAction({
     id: "sort_files_by_date",
-    sortKeySelector: (file: Nullable<FileData>) =>
-      file ? file.modDate : undefined,
+    sortKeySelector: ((file) => {
+      if (typeof file?.modDate === "string") return new Date(file.modDate);
+      return file?.modDate;
+    }) as FileSortKeySelector,
     button: {
       name: "Sort by date",
       toolbar: true,
       group: "Sort",
+      icon: FbIconName.sortDateAsc,
       ascIcon: FbIconName.sortDateAsc,
       descIcon: FbIconName.sortDateDesc,
     },
   } as const),
-  /**
-   * Action that toggles whether hidden files are shown to the user or not.
-   */
+
   ToggleHiddenFiles: defineFileAction({
     id: "toggle_hidden_files",
     hotkeys: ["ctrl+h"],
-    option: {
-      id: OptionIds.ShowHiddenFiles,
-      defaultValue: true,
-    },
+    option: { id: "show_hidden_files", defaultValue: true },
     button: {
       name: "Show hidden files",
       toolbar: true,
       group: "Options",
+      icon: FbIconName.hidden,
     },
   } as const),
-  /**
-   * Action that toggles whether folders should appear before files regardless of
-   * current sort function.
-   */
+
   ToggleShowFoldersFirst: defineFileAction({
     id: "toggle_show_folders_first",
-    option: {
-      id: OptionIds.ShowFoldersFirst,
-      defaultValue: true,
-    },
+    option: { id: "show_folders_first", defaultValue: true },
     button: {
       name: "Show folders first",
       toolbar: true,
       group: "Options",
+      icon: FbIconName.sort,
     },
   } as const),
-  /**
-   * Action that focuses the search input when it is dispatched.
-   */
+
   FocusSearchInput: defineFileAction(
     {
       id: "focus_search_input",
       hotkeys: ["ctrl+f"],
-    } as const,
-    ({ getReduxState }) => {
-      const focusSearchInput = selectFocusSearchInput(getReduxState());
-      if (focusSearchInput) focusSearchInput();
-    },
-  ),
-  SelectMode: defineFileAction(
-    {
-      id: "select_mode",
       button: {
-        name: "Select Mode",
-        toolbar: true,
-        icon: FbIconName.select,
+        name: "Search",
+        icon: FbIconName.search,
         iconOnly: true,
       },
     } as const,
-    ({ reduxDispatch }) => {
-      reduxDispatch(reduxActions.setSelectionMode(true));
-      return undefined;
+    ({ getState }) => {
+      const fn = getState().focusSearchInput;
+      if (fn) fn();
     },
   ),
 };
