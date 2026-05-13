@@ -1,5 +1,4 @@
 import React, {
-  HTMLProps,
   useEffect,
   useMemo,
   useRef,
@@ -26,16 +25,11 @@ export type FileEntryState = {
 
 export const useFileEntryHtmlProps = (
   file: Nullable<FileData>,
-): HTMLProps<HTMLDivElement> => {
+): Record<string, string | undefined> => {
   return useMemo(() => {
-    const dataProps: { [prop: string]: Undefinable<string> } = {
+    return {
       "data-test-id": "file-entry",
       "data-file-id": file ? file.id : undefined,
-    };
-
-    return {
-      role: "listitem",
-      ...dataProps,
     };
   }, [file]);
 };

@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   Virtualizer,
-  GridList,
-  GridListItem,
   ListLayout,
   GridLayout,
   Size,
@@ -30,8 +28,7 @@ import { GridEntry } from "./grid-entry";
 import { ListEntry } from "./list-entry";
 import { TileEntry } from "./tile-entry";
 import { FileListEmpty } from "./file-list-empty";
-
-import clsx from "clsx";
+import { StyledGridList, StyledGridListItem } from "./styled-grid-list";
 
 // ---- Parametrized selectors ----
 
@@ -68,16 +65,10 @@ const FileGridItemRenderer = memo(
     const textValue = file?.name ?? "Loading...";
 
     return (
-      <GridListItem
+      <StyledGridListItem
         id={fileId ?? undefined}
         textValue={textValue}
-        className={clsx(
-          "outline-none rounded-2xl",
-          "data-[selected=true]:bg-accent-soft",
-          "data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-accent",
-          "data-[focus-visible=true]:outline-offset-2",
-          "data-[pressed=true]:scale-[0.98] transition-transform",
-        )}
+        isCard={viewMode !== FileViewMode.List}
       >
         {viewMode === FileViewMode.List ? (
           <ListEntry file={file} selected={selected} />
@@ -86,7 +77,7 @@ const FileGridItemRenderer = memo(
         ) : (
           <TileEntry file={file} selected={selected} />
         )}
-      </GridListItem>
+      </StyledGridListItem>
     );
   },
 );
@@ -155,19 +146,20 @@ export const FileGrid = memo(() => {
     [dispatch, displayFileIds, fileMap],
   );
 
-  // Layout config: Virtualizer layout class + options + GridList layout prop
+  // Layout config: Virtualizer layout class + options
   const isList = viewMode === FileViewMode.List;
   const LayoutClass = isList ? ListLayout : GridLayout;
   const layoutOptions = useMemo(
     () =>
       isList
-        ? { estimatedRowSize: 56 }
+        ? { estimatedRowSize: 56, gap: 2 }
         : {
             minItemSize: new Size(
               viewMode === FileViewMode.Grid ? 180 : 200,
               180,
             ),
             maxColumns: 12,
+            minSpace: new Size(8, 8),
           },
     [isList, viewMode],
   );
@@ -185,7 +177,7 @@ export const FileGrid = memo(() => {
   return (
     <div className="size-full pl-2 pb-2 rounded-b-3xl">
       <Virtualizer layout={LayoutClass} layoutOptions={layoutOptions}>
-        <GridList
+        <StyledGridList
           aria-label="File browser"
           selectionMode="multiple"
           selectedKeys={selectedKeys}
@@ -193,17 +185,7 @@ export const FileGrid = memo(() => {
           onAction={handleAction}
           layout={gridListLayout}
           items={items}
-          className={clsx(
-            "size-full",
-            "[&::-webkit-scrollbar]:w-2",
-            "[&::-webkit-scrollbar-thumb]:bg-accent",
-            "[&::-webkit-scrollbar-thumb]:rounded",
-          )}
-          style={{
-            display: "block",
-            padding: 0,
-            minHeight: 200,
-          }}
+          style={{ minHeight: "100%", display: "block" }}
         >
           {(item: FileGridItem) => (
             <FileGridItemRenderer
@@ -212,7 +194,7 @@ export const FileGrid = memo(() => {
               viewMode={viewMode}
             />
           )}
-        </GridList>
+        </StyledGridList>
       </Virtualizer>
     </div>
   );

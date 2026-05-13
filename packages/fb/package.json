@@ -53,6 +53,7 @@
 		"redux-watch": "^1.2.0",
 		"shortid": "^2.2.17",
 		"tailwind-merge": "^3.6.0",
+		"tailwind-variants": "^3.2.2",
 		"tsdef": "^0.0.14"
 	},
 	"devDependencies": {
