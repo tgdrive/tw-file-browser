@@ -7,16 +7,11 @@ export default defineConfig({
   format: ["esm"],
   treeshake: true,
   entry: ["src/index.ts"],
-  dts: {
-    compilerOptions: {
-      noUnusedLocals: false,
-    },
-  },
+  dts: true,
   esbuildPlugins: [
     Icons({
       compiler: "jsx",
       jsx: "react",
     }),
   ],
-  external: ["react", "react-dom"],
 });
