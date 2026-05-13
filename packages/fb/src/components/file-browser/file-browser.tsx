@@ -1,11 +1,11 @@
 import React, { type ReactNode, useMemo } from "react";
-import { IntlProvider } from "react-intl";
+import { I18nProvider } from "@react-aria/i18n";
 import { Provider as ReduxProvider } from "react-redux";
 import shortid from "shortid";
 import { useFbStore } from "@/redux/store";
 import type {
-	FileBrowserHandle,
-	FileBrowserProps,
+  FileBrowserHandle,
+  FileBrowserProps,
 } from "@/types/file-browser.types";
 import { defaultConfig } from "@/util/default-config";
 import { getValueOrFallback } from "@/util/helpers";
@@ -15,35 +15,35 @@ import { FbBusinessLogic } from "./fb-business-logic";
 import { FbPresentationLayer } from "./fb-presentation-layer";
 
 export const FileBrowser = React.forwardRef<
-	FileBrowserHandle,
-	FileBrowserProps & { children?: ReactNode }
+  FileBrowserHandle,
+  FileBrowserProps & { children?: ReactNode }
 >((props, ref) => {
-	const { instanceId, children } = props;
+  const { instanceId, children } = props;
 
-	const i18n = getValueOrFallback(props.i18n, defaultConfig.i18n);
+  const i18n = getValueOrFallback(props.i18n, defaultConfig.i18n);
 
-	const formatters = useMemo(
-		() => ({ ...defaultFormatters, ...i18n?.formatters }),
-		[i18n],
-	);
+  const formatters = useMemo(
+    () => ({ ...defaultFormatters, ...i18n?.formatters }),
+    [i18n],
+  );
 
-	const fBInstanceId = useStaticValue(() => instanceId ?? shortid.generate());
+  const fBInstanceId = useStaticValue(() => instanceId ?? shortid.generate());
 
-	const store = useFbStore(fBInstanceId);
+  const store = useFbStore(fBInstanceId);
 
-	const fBComps = (
-		<>
-			<FbBusinessLogic ref={ref} {...props} />
-			<FbPresentationLayer>{children}</FbPresentationLayer>
-		</>
-	);
+  const fBComps = (
+    <>
+      <FbBusinessLogic ref={ref} {...props} />
+      <FbPresentationLayer>{children}</FbPresentationLayer>
+    </>
+  );
 
-	return (
-		<IntlProvider locale="en" defaultLocale="en" {...i18n}>
-			<FbFormattersContext.Provider value={formatters}>
-				<ReduxProvider store={store}>{fBComps}</ReduxProvider>
-			</FbFormattersContext.Provider>
-		</IntlProvider>
-	);
+  return (
+    <I18nProvider locale={i18n?.locale || "en"}>
+      <FbFormattersContext.Provider value={formatters}>
+        <ReduxProvider store={store}>{fBComps}</ReduxProvider>
+      </FbFormattersContext.Provider>
+    </I18nProvider>
+  );
 });
 FileBrowser.displayName = "FileBrowser";

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useIntl } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocalizedStringFormatter } from "@react-aria/i18n";
 
 import { reduxActions } from "@/redux/reducers";
 import { selectSearchString } from "@/redux/selectors";
@@ -8,12 +8,24 @@ import { useDebounce } from "@/util/hooks-helpers";
 import { getI18nId, I18nNamespace } from "@/util/i18n";
 import { FbDispatch } from "@/types/redux.types";
 
+const searchMessages: Record<string, Record<string, string>> = {
+  en: {
+    [getI18nId(I18nNamespace.Toolbar, "searchPlaceholder")]: "Search",
+  },
+};
+
 export const ToolbarSearch = React.memo(() => {
-  const intl = useIntl();
-  const searchPlaceholderString = intl.formatMessage({
-    id: getI18nId(I18nNamespace.Toolbar, "searchPlaceholder"),
-    defaultMessage: "Search",
-  });
+  const stringFormatter = useLocalizedStringFormatter(searchMessages);
+
+  const searchPlaceholderString = (() => {
+    try {
+      return stringFormatter.format(
+        getI18nId(I18nNamespace.Toolbar, "searchPlaceholder"),
+      );
+    } catch {
+      return "Search";
+    }
+  })();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -46,10 +58,6 @@ export const ToolbarSearch = React.memo(() => {
   );
   const handleKeyUp = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
-      // Remove focus from the search input field when user presses escape.
-      // Note: We use KeyUp instead of KeyPress because some browser plugins can
-      //       intercept KeyPress events with Escape key.
-      //       @see https://stackoverflow.com/a/37461974
       if (event.key === "Escape") {
         setLocalSearchString("");
         dispatch(reduxActions.setSearchString(""));

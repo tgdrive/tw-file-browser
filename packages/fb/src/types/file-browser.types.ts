@@ -146,10 +146,9 @@ export interface FileBrowserProps {
 	clearSelectionOnOutsideClick?: boolean;
 
 	/**
-	 * Configuration for the `react-intl` i18n library. Fb provides some default
-	 * values, e.g. `locale` and `defaultLocale` are set to `en`. Any settings you
-	 * specify here will override the defaults.
-	 * @see https://formatjs.io/docs/react-intl/components
+	 * Configuration for the i18n system. Uses React Aria's I18nProvider under the
+	 * hood. Set the `locale` to enable locale-aware date formatting and string
+	 * translations. Falls back to `"en"` if not set.
 	 */
 	i18n?: I18nConfig;
 

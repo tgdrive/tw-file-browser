@@ -1,16 +1,28 @@
 import React from "react";
-import { useIntl } from "react-intl";
+import { useLocalizedStringFormatter } from "@react-aria/i18n";
 
 import { FbIconName } from "@/util/enums";
 import { getI18nId, I18nNamespace } from "@/util/i18n";
 import { FbIcon } from "../shared/fb-icon";
 
+const emptyMessages: Record<string, Record<string, string>> = {
+  en: {
+    [getI18nId(I18nNamespace.FileList, "nothingToShow")]: "Nothing to show",
+  },
+};
+
 export const FileListEmpty = () => {
-  const intl = useIntl();
-  const emptyString = intl.formatMessage({
-    id: getI18nId(I18nNamespace.FileList, "nothingToShow"),
-    defaultMessage: "Nothing to show",
-  });
+  const stringFormatter = useLocalizedStringFormatter(emptyMessages);
+
+  const emptyString = (() => {
+    try {
+      return stringFormatter.format(
+        getI18nId(I18nNamespace.FileList, "nothingToShow"),
+      );
+    } catch {
+      return "Nothing to show";
+    }
+  })();
 
   return (
     <div

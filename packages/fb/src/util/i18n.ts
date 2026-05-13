@@ -1,6 +1,9 @@
 import { filesize } from "filesize";
 import { createContext, useContext, useMemo } from "react";
-import { FormatDateOptions, IntlShape, useIntl } from "react-intl";
+import {
+  useDateFormatter,
+  useLocalizedStringFormatter,
+} from "@react-aria/i18n";
 import { Nullable, Undefinable } from "tsdef";
 
 import { FileAction } from "@/types/action.types";
@@ -9,96 +12,121 @@ import { FbFormatters } from "@/types/i18n.types";
 import { FileHelper } from "./file-helper";
 
 export enum I18nNamespace {
-	Toolbar = "toolbar",
-	FileList = "fileList",
-	FileEntry = "fileEntry",
-	FileContextMenu = "contextMenu",
+  Toolbar = "toolbar",
+  FileList = "fileList",
+  FileEntry = "fileEntry",
+  FileContextMenu = "contextMenu",
 
-	FileActions = "actions",
-	FileActionGroups = "actionGroups",
+  FileActions = "actions",
+  FileActionGroups = "actionGroups",
 }
 
-export const getI18nId = (namespace: I18nNamespace, stringId: string): string =>
-	`Fb.${namespace}.${stringId}`;
+export const getI18nId = (
+  namespace: I18nNamespace,
+  stringId: string,
+): string => `Fb.${namespace}.${stringId}`;
 
-export const getActionI18nId = (actionId: string, stringId: string): string =>
-	`Fb.${I18nNamespace.FileActions}.${actionId}.${stringId}`;
+export const getActionI18nId = (
+  actionId: string,
+  stringId: string,
+): string => `Fb.${I18nNamespace.FileActions}.${actionId}.${stringId}`;
 
-export const useLocalizedFileActionGroup = (groupName: string) => {
-	const intl = useIntl();
-	return useMemo(() => {
-		return intl.formatMessage({
-			id: getI18nId(I18nNamespace.FileActionGroups, groupName),
-			defaultMessage: groupName,
-		});
-	}, [groupName, intl]);
+// ---- Default English messages ----
+
+const defaultMessages: Record<string, Record<string, string>> = {
+  en: {
+    // Toolbar
+    "Fb.toolbar.searchPlaceholder": "Search",
+    // File list
+    "Fb.fileList.nothingToShow": "Nothing to show",
+  },
 };
 
-export const useLocalizedFileActionStrings = (action: Nullable<FileAction>) => {
-	const intl = useIntl();
-	return useMemo(() => {
-		if (!action) {
-			return {
-				buttonName: "",
-				buttonTooltip: undefined,
-			};
-		}
-		const buttonName = intl.formatMessage({
-			id: getActionI18nId(action.id, "button.name"),
-			defaultMessage: action.button?.name,
-		});
+// ---- Hooks ----
 
-		let buttonTooltip: Undefinable<string> = undefined;
-		if (action.button?.tooltip) {
-			buttonTooltip = intl.formatMessage({
-				id: getActionI18nId(action.id, "button.tooltip"),
-				defaultMessage: action.button?.tooltip,
-			});
-		}
+export const useLocalizedFileActionGroup = (groupName: string) => {
+  const stringFormatter = useLocalizedStringFormatter(defaultMessages);
+  return useMemo(() => {
+    const key = getI18nId(I18nNamespace.FileActionGroups, groupName);
+    try {
+      return stringFormatter.format(key);
+    } catch {
+      return groupName;
+    }
+  }, [groupName, stringFormatter]);
+};
 
-		return {
-			buttonName,
-			buttonTooltip,
-		};
-	}, [action, intl]);
+export const useLocalizedFileActionStrings = (
+  action: Nullable<FileAction>,
+) => {
+  const stringFormatter = useLocalizedStringFormatter(defaultMessages);
+  return useMemo(() => {
+    if (!action) {
+      return {
+        buttonName: "",
+        buttonTooltip: undefined,
+      };
+    }
+
+    const nameKey = getActionI18nId(action.id, "button.name");
+    let buttonName: string;
+    try {
+      buttonName = stringFormatter.format(nameKey);
+    } catch {
+      buttonName = action.button?.name ?? "";
+    }
+
+    let buttonTooltip: Undefinable<string> = undefined;
+    if (action.button?.tooltip) {
+      const tooltipKey = getActionI18nId(action.id, "button.tooltip");
+      try {
+        buttonTooltip = stringFormatter.format(tooltipKey);
+      } catch {
+        buttonTooltip = action.button?.tooltip;
+      }
+    }
+
+    return {
+      buttonName,
+      buttonTooltip,
+    };
+  }, [action, stringFormatter]);
 };
 
 export const useLocalizedFileEntryStrings = (file: Nullable<FileData>) => {
-	const intl = useIntl();
-	const formatters = useContext(FbFormattersContext);
-	return useMemo(() => {
-		return {
-			fileModDateString: formatters.formatFileModDate(intl, file),
-			fileSizeString: formatters.formatFileSize(intl, file),
-		};
-	}, [file, formatters, intl]);
+  const formatters = useContext(FbFormattersContext);
+  const dateFormatter = useDateFormatter({
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  return useMemo(() => {
+    return {
+      fileModDateString: formatters.formatFileModDate(file, dateFormatter),
+      fileSizeString: formatters.formatFileSize(file),
+    };
+  }, [file, formatters, dateFormatter]);
 };
 
-export const defaultFormatters: FbFormatters = {
-	formatFileModDate: (
-		intl: IntlShape,
-		file: Nullable<FileData>,
-	): Nullable<string> => {
-		const safeModDate = FileHelper.getModDate(file);
-		if (safeModDate) {
-			const dateOpts: FormatDateOptions = {
-				dateStyle: "medium",
-				timeStyle: "short",
-			};
+// ---- Default formatters ----
 
-			return intl.formatDate(safeModDate, dateOpts);
-		}
-		return null;
-	},
-	formatFileSize: (
-		_intl: IntlShape,
-		file: Nullable<FileData>,
-	): Nullable<string> => {
-		if (!file || typeof file.size !== "number") return null;
-		return filesize(file.size, {
-			standard: "jedec",
-		});
-	},
+export const defaultFormatters: FbFormatters = {
+  formatFileModDate: (
+    file: Nullable<FileData>,
+    dateFormatter: { format: (date: Date) => string },
+  ): Nullable<string> => {
+    const safeModDate = FileHelper.getModDate(file);
+    if (safeModDate) {
+      return dateFormatter.format(new Date(safeModDate));
+    }
+    return null;
+  },
+  formatFileSize: (file: Nullable<FileData>): Nullable<string> => {
+    if (!file || typeof file.size !== "number") return null;
+    return filesize(file.size, {
+      standard: "jedec",
+    });
+  },
 };
 
 export const FbFormattersContext = createContext(defaultFormatters);
