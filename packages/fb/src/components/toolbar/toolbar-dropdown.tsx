@@ -14,14 +14,14 @@ const DropdownItemContent = memo(
   ({ fileActionId }: { fileActionId: string }) => {
     const action = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
     const { icon } = useFileActionProps(fileActionId);
-    const { buttonName } = useLocalizedFileActionStrings(action);
+    const { actionName } = useLocalizedFileActionStrings(action);
 
-    if (!action?.button) return null;
+    if (!action?.ui) return null;
 
     return (
-      <Dropdown.Item id={fileActionId} textValue={buttonName}>
+      <Dropdown.Item id={fileActionId} textValue={actionName}>
         {icon && <FbIcon icon={icon} className="size-4 shrink-0 text-muted" />}
-        <Label>{buttonName}</Label>
+        <Label>{actionName}</Label>
       </Dropdown.Item>
     );
   },

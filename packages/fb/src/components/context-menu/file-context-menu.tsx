@@ -11,15 +11,16 @@ const ContextMenuItemContent = memo(
   ({ fileActionId }: { fileActionId: string }) => {
     const action = useFbStore((s) => s.state.fileActionMap[fileActionId]);
     const { icon } = useFileActionProps(fileActionId);
-    const { buttonName } = useLocalizedFileActionStrings(action);
+    const { actionName } = useLocalizedFileActionStrings(action);
     const hotkey = action?.hotkeys?.[0];
 
-    if (!action?.button?.contextMenu) return null;
+    const ui = action?.ui;
+    if (!ui?.contextMenu) return null;
 
     return (
-      <Dropdown.Item id={fileActionId} textValue={buttonName}>
+      <Dropdown.Item id={fileActionId} textValue={actionName}>
         {icon && <FbIcon icon={icon} className="size-4 shrink-0 text-muted" />}
-        <Label>{buttonName}</Label>
+        <Label>{actionName}</Label>
         {hotkey && (
           <Kbd className="ms-auto" slot="keyboard" variant="light">
             <Kbd.Content>{hotkey}</Kbd.Content>

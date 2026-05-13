@@ -1,7 +1,6 @@
 import type { FileSelectionTransform } from "@/types/action.types";
 import { defineFileAction } from "@/util/helpers";
 import { FbIconName, FileViewMode } from "@/util/enums";
-import { FileSortKeySelector } from "@/types/sort.types";
 import { EssentialActions } from "./essential";
 
 export const DefaultActions = {
@@ -12,9 +11,8 @@ export const DefaultActions = {
     {
       id: "open_selection",
       hotkeys: ["enter"],
-      requiresSelection: true,
-      fileFilter: (file) => !!file?.openable,
-      button: {
+      target: { source: "selection-or-context-item", min: 1, filter: (file) => !!file?.openable },
+      ui: {
         name: "Open selection",
         toolbar: true,
         contextMenu: true,
@@ -36,20 +34,20 @@ export const DefaultActions = {
   SelectAllFiles: defineFileAction({
     id: "select_all_files",
     hotkeys: ["ctrl+a"],
-    button: {
+    ui: {
       name: "Select all files",
       toolbar: true,
       contextMenu: true,
       group: "Options",
       icon: FbIconName.selectAllFiles,
     },
-    selectionTransform: (({ fileIds, hiddenFileIds }) => {
+    steps: [{ type: "transform-selection", transform: (({ fileIds, hiddenFileIds }) => {
       const newSelection = new Set<string>();
       fileIds.forEach((fileId) => {
         if (!hiddenFileIds.has(fileId)) newSelection.add(fileId);
       });
       return newSelection;
-    }) as FileSelectionTransform,
+    }) as FileSelectionTransform }],
   } as const),
 
   /**
@@ -58,17 +56,17 @@ export const DefaultActions = {
   ClearSelection: defineFileAction({
     id: "clear_selection",
     hotkeys: ["escape"],
-    button: {
+    ui: {
       name: "Clear selection",
       toolbar: true,
       contextMenu: true,
       group: "Options",
       icon: FbIconName.clearSelection,
     },
-    selectionTransform: (({ prevSelection }) => {
+    steps: [{ type: "transform-selection", transform: (({ prevSelection }) => {
       if (prevSelection.size === 0) return null;
       return new Set<string>();
-    }) as FileSelectionTransform,
+    }) as FileSelectionTransform }],
   } as const),
 
   /**
@@ -76,8 +74,8 @@ export const DefaultActions = {
    */
   EnableListView: defineFileAction({
     id: "enable_list_view",
-    fileViewConfig: { mode: FileViewMode.List },
-    button: {
+    steps: [{ type: "set-view", config: { mode: FileViewMode.List } }],
+    ui: {
       name: "List view",
       toolbar: true,
       group: "View",
@@ -90,8 +88,8 @@ export const DefaultActions = {
    */
   EnableGridView: defineFileAction({
     id: "enable_grid_view",
-    fileViewConfig: { mode: FileViewMode.Grid },
-    button: {
+    steps: [{ type: "set-view", config: { mode: FileViewMode.Grid } }],
+    ui: {
       name: "Grid view",
       toolbar: true,
       group: "View",
@@ -101,8 +99,8 @@ export const DefaultActions = {
 
   SortFilesByName: defineFileAction({
     id: "sort_files_by_name",
-    sortKeySelector: ((file) => file?.name) as FileSortKeySelector,
-    button: {
+    steps: [{ type: "sort", keySelector: (file) => file?.name }],
+    ui: {
       name: "Sort by name",
       toolbar: true,
       group: "Sort",
@@ -114,8 +112,8 @@ export const DefaultActions = {
 
   SortFilesBySize: defineFileAction({
     id: "sort_files_by_size",
-    sortKeySelector: ((file) => file?.size) as FileSortKeySelector,
-    button: {
+    steps: [{ type: "sort", keySelector: (file) => file?.size }],
+    ui: {
       name: "Sort by size",
       toolbar: true,
       group: "Sort",
@@ -126,11 +124,11 @@ export const DefaultActions = {
 
   SortFilesByDate: defineFileAction({
     id: "sort_files_by_date",
-    sortKeySelector: ((file) => {
+    steps: [{ type: "sort", keySelector: (file) => {
       if (typeof file?.modDate === "string") return new Date(file.modDate);
       return file?.modDate;
-    }) as FileSortKeySelector,
-    button: {
+    } }],
+    ui: {
       name: "Sort by date",
       toolbar: true,
       group: "Sort",
@@ -143,8 +141,8 @@ export const DefaultActions = {
   ToggleHiddenFiles: defineFileAction({
     id: "toggle_hidden_files",
     hotkeys: ["ctrl+h"],
-    option: { id: "show_hidden_files", defaultValue: true },
-    button: {
+    steps: [{ type: "toggle-option", optionId: "show_hidden_files", defaultValue: true }],
+    ui: {
       name: "Show hidden files",
       toolbar: true,
       group: "Options",
@@ -154,8 +152,8 @@ export const DefaultActions = {
 
   ToggleShowFoldersFirst: defineFileAction({
     id: "toggle_show_folders_first",
-    option: { id: "show_folders_first", defaultValue: true },
-    button: {
+    steps: [{ type: "toggle-option", optionId: "show_folders_first", defaultValue: true }],
+    ui: {
       name: "Show folders first",
       toolbar: true,
       group: "Options",
@@ -167,7 +165,7 @@ export const DefaultActions = {
     {
       id: "focus_search_input",
       hotkeys: ["ctrl+f"],
-      button: {
+      ui: {
         name: "Search",
         icon: FbIconName.search,
         iconOnly: true,

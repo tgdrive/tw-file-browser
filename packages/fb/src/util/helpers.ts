@@ -24,7 +24,7 @@ export const defineFileAction = <Action extends FileAction>(
 	action: Action,
 	effect?: FileActionEffect<FileAction>,
 ): WritableProps<Action> => {
-	if (action.__payloadType !== undefined && (action.hotkeys || action.button)) {
+	if (action.__payloadType !== undefined && (action.hotkeys || action.ui)) {
 		const errorMessage =
 			`Invalid definition was provided for file action "${action.id}". Actions ` +
 			`that specify hotkeys or buttons cannot define a payload type. If ` +

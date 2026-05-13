@@ -6,6 +6,11 @@ import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
 import { FbIconName, CustomVisibilityState, SortOrder } from "@/util/enums";
 import { FileHelper } from "./file-helper";
 
+const getActionUi = (action: any) => action?.ui;
+const getOptionStep = (action: any) => action?.steps?.find((s: any) => s.type === "toggle-option");
+const getViewStep = (action: any) => action?.steps?.find((s: any) => s.type === "set-view");
+const getSortStep = (action: any) => action?.steps?.find((s: any) => s.type === "sort");
+
 export const useFileActionTrigger = (fileActionId: string) => {
   const storeApi = useFbStoreApi();
   const fileAction = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
@@ -33,15 +38,20 @@ export const useFileActionProps = (
   const sortOrder = useFbStore((s) => s.state.sortOrder);
 
   const action = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
-  const optionValue = useFbStore(
-    (s) => s.state.optionMap[(action?.option?.id) as string],
-  );
+  const optionId = getOptionStep(action)?.optionId as string | undefined;
+  const optionValue = useFbStore((s) => (optionId ? s.state.optionMap[optionId] : undefined));
 
   const actionSelectionSize = useFbStore((s) => {
     const a = s.state.fileActionMap[fileActionId];
-    if (!a || !a.requiresSelection) return undefined;
+    if (!a?.target) return undefined;
     const selectedFiles = Object.keys(s.state.selectionMap).map((id) => s.state.fileMap[id]);
-    const filtered = a.fileFilter ? selectedFiles.filter(a.fileFilter) : selectedFiles;
+    const triggerFileId = s.state.contextMenuConfig?.triggerFileId ?? null;
+    const triggerFile = triggerFileId ? s.state.fileMap[triggerFileId] ?? null : null;
+    let targetFiles = selectedFiles;
+    if (a.target.source === "context-item") targetFiles = triggerFile ? [triggerFile] : [];
+    else if (a.target.source === "selection-or-context-item") targetFiles = selectedFiles.length > 0 ? selectedFiles : (triggerFile ? [triggerFile] : []);
+    else if (a.target.source === "none") targetFiles = [];
+    const filtered = a.target.filter ? targetFiles.filter(a.target.filter) : targetFiles;
     return filtered.length;
   });
 
@@ -50,18 +60,20 @@ export const useFileActionProps = (
   return useMemo(() => {
     if (!action) return { icon: null, active: false, disabled: true };
 
-    let icon = action.button?.icon ?? null;
-    if (action.sortKeySelector) {
+    const ui = getActionUi(action);
+    let icon = ui?.icon ?? null;
+    const sortStep = getSortStep(action);
+    if (sortStep) {
       if (sortActionId === action.id) {
         if (sortOrder === SortOrder.ASC) {
-          icon = action.button?.ascIcon || FbIconName.sortAsc;
+          icon = ui?.ascIcon || FbIconName.sortAsc;
         } else {
-          icon = action.button?.descIcon || FbIconName.sortDesc;
+          icon = ui?.descIcon || FbIconName.sortDesc;
         }
       } else {
         icon = FbIconName.placeholder;
       }
-    } else if (action.option) {
+    } else if (optionId) {
       if (optionValue) {
         icon = FbIconName.toggleOn;
       } else {
@@ -70,9 +82,9 @@ export const useFileActionProps = (
     }
 
     const isSortButtonAndCurrentSort = action.id === sortActionId;
-    const isFileViewButtonAndCurrentView =
-      action.fileViewConfig === fileViewConfig;
-    const isOptionAndEnabled = action.option ? !!optionValue : false;
+    const viewStep = getViewStep(action);
+    const isFileViewButtonAndCurrentView = !!viewStep && viewStep.config.mode === fileViewConfig.mode;
+    const isOptionAndEnabled = optionId ? !!optionValue : false;
 
     let customDisabled = false;
     let customActive = false;
@@ -82,13 +94,14 @@ export const useFileActionProps = (
       customActive = action.customVisibility() === CustomVisibilityState.Active;
     }
     const active =
-      isSortButtonAndCurrentSort ||
+      (!!sortStep && isSortButtonAndCurrentSort) ||
       isFileViewButtonAndCurrentView ||
       isOptionAndEnabled ||
       customActive;
 
+    const minTarget = action.target?.min ?? 0;
     let disabled: boolean =
-      (!!action.requiresSelection && actionSelectionEmpty) || customDisabled;
+      (minTarget > 0 && actionSelectionEmpty) || customDisabled;
 
     if (action.id === FbActions.OpenParentFolder.id) {
       // We treat `open_parent_folder` file action as a special case as it

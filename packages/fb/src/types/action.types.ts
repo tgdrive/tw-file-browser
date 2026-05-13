@@ -15,59 +15,31 @@ export interface FileAction {
    */
   id: string;
   /**
-   * When set to `true`, the action will only be active (dispatchable) when user
-   * selects one or more files. If `fileFilter` is defined, it will be applied to
-   * selection before checking if its empty.
-   */
-  requiresSelection?: boolean; // Requires selection of 1+ files
-  /**
-   * A predicate that determines whether a file should be included in the selection
-   * for this action.
-   */
-  fileFilter?: FileFilter;
-  /**
    * List of hotkeys that should trigger this action, defined using `hotkey-js`
    * notation.
    * @see https://www.npmjs.com/package/hotkeys-js
    */
   hotkeys?: string[] | readonly string[];
+  /** Preferred UI metadata for toolbar/context-menu rendering. */
+  ui?: FileActionUi;
   /**
-   * When button is defined and `toolbar` or `contextMenu` is set to `true`, a
-   * button will be added to the relevant UI component. Clicking on this button
-   * will active this action. The appearance of the button will change based on
-   * the action definition and the current Fb state.
+   * Preferred target resolution rules for this action.
    */
-  button?: FileActionButton;
+  target?: FileActionTarget;
   /**
-   * When `sortKeySelector` is specified, the action becomes a sorting toggle. When
-   * this action is activated, it will sort files using the key selector, toggling
-   * between Ascending and Descending orders.
+   * Preferred internal pipeline executed before effect/dispatch.
    */
-  sortKeySelector?: FileSortKeySelector;
+  steps?: FileActionStep[];
   /**
-   * When `fileViewConfig` is specified, triggering this action will apply the
-   * provided config to Fb's file view.
+   * Controls whether the external action handler is called.
    */
-  fileViewConfig?: FileViewConfig;
-  /**
-   * When `option` is specified, the action becomes an option toggle. When the action
-   * is activated, the boolean value of the option will be toggled.
-   */
-  option?: FileActionOption;
-
+  dispatch?: "external" | "internal-only" | "after-steps";
   /**
    * When `breakPointsOverirdes` is specified, the action will override the button
    * settings. The breakpoints will be applied only when the
    * action is active.
    */
-  breakPointsOverrides?: Record<string, Partial<FileActionButton>>;
-
-  /**
-   * When selection transform is defined, activating this action will update the file
-   * selection. If the transform function returns `null`, selection will be left
-   * untouched.
-   */
-  selectionTransform?: FileSelectionTransform;
+  breakPointsOverrides?: Record<string, Partial<FileActionUi>>;
   /**
    * When effect is defined, it will be called right before dispatching the action to
    * the user defined action handler. If the effect function returns a promise, Fb
@@ -111,10 +83,20 @@ export interface FileActionButton {
   descIcon?: FbIconName | string | any; // Asc Order Icon name
 }
 
-export interface FileActionOption {
-  id: string; // Unique option ID
-  defaultValue: boolean; // Whether the option is enabled by default (required)
+export interface FileActionUi extends FileActionButton {}
+
+export interface FileActionTarget {
+  source: "none" | "selection" | "context-item" | "selection-or-context-item";
+  filter?: FileFilter;
+  min?: number;
+  max?: number;
 }
+
+export type FileActionStep =
+  | { type: "set-view"; config: FileViewConfig }
+  | { type: "toggle-option"; optionId: string; defaultValue?: boolean }
+  | { type: "sort"; keySelector: FileSortKeySelector; actionId?: string; defaultOrder?: "ASC" | "DESC" }
+  | { type: "transform-selection"; transform: FileSelectionTransform };
 
 export type FileSelectionTransform = (data: {
   prevSelection: Set<string>;

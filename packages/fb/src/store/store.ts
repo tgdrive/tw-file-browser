@@ -17,7 +17,7 @@ import type {
   GenericFileActionHandler, FileActionData, FileActionState,
 } from "@/types/action-handler.types";
 import type { ActionGroup, FileActionGroup, FileActionMenuItem } from "@/types/action-menus.types";
-import type { FileAction, FileActionMap } from "@/types/action.types";
+import type { FileAction, FileActionMap, FileSelectionTransform } from "@/types/action.types";
 import type { ContextMenuConfig } from "@/types/context-menu.types";
 import type { FileArray, FileData, FileFilter, FileIdTrueMap, FileMap } from "@/types/file.types";
 import type { FileViewConfig } from "@/types/file-view.types";
@@ -115,7 +115,7 @@ export interface FbActions {
   updateRawFileActions: (raw: FileAction[] | any, bp: Nilable<string>, dd: Nilable<boolean | string[]>, de: Nilable<boolean | string[]>) => void;
   updateDefaultFileViewActionId: (id: Nilable<string>) => void;
   activateSortAction: (id: Nilable<string>, order?: SortOrder) => void;
-  applySelectionTransform: (a: FileAction) => void;
+  applySelectionTransform: (t: FileSelectionTransform) => void;
   requestFileAction: <A extends FileAction>(a: A, p: A["__payloadType"]) => void;
 }
 
@@ -130,18 +130,27 @@ export interface FbStore {
 // ============================================================
 // Derived data helpers
 // ============================================================
+function getSortSelector(action: Nullable<FileAction>): Nullable<FileSortKeySelector> {
+  if (!action?.steps?.length) return null;
+  const sortStep = action.steps.find((s) => s.type === "sort");
+  if (!sortStep || !("keySelector" in sortStep)) return null;
+  return sortStep.keySelector ?? null;
+}
+
 function computeSortedFileIds(
   fileIds: Nullable<string>[], sortOrder: SortOrder, fileMap: FileMap,
   sortActionId: Nullable<string>, optionMap: OptionMap, fileActionMap: FileActionMap,
 ): Nullable<string>[] {
   const action = sortActionId ? fileActionMap[sortActionId] : null;
   if (!action) return fileIds;
+  const sortSelector = getSortSelector(action);
+  if (!sortSelector) return fileIds;
   const files = fileIds.map((fid) => (fid && fileMap[fid] ? fileMap[fid] : null));
   const sf = optionMap[OptionIds.ShowFoldersFirst] ?? false;
   const p = (s: FileSortKeySelector) => (f: Nullable<FileData>) => s(f);
   const fns: any[] = [];
   if (sf) fns.push({ desc: p(FileHelper.isDirectory) });
-  if (action.sortKeySelector) fns.push({ [sortOrder === SortOrder.ASC ? "asc" : "desc"]: p(action.sortKeySelector) });
+  fns.push({ [sortOrder === SortOrder.ASC ? "asc" : "desc"]: p(sortSelector) });
   if (!fns.length) return fileIds;
   for (const fn of fns) fn.comparer = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" }).compare;
   return sort([...files]).by(fns).map((f: Nullable<FileData>) => (f ? f.id : null));
@@ -174,6 +183,41 @@ const mergeActions = (...arrays: FileAction[][]): FileAction[] => {
   const seen = new Set<string>(); const r: FileAction[] = [];
   for (const arr of arrays) for (const a of arr) if (!seen.has(a.id)) { seen.add(a.id); r.push(a); }
   return r;
+};
+
+const getActionUi = (action: FileAction) => action.ui;
+
+const resolveActionSelection = (action: FileAction, s: FbState) => {
+  const selectedFiles = Object.keys(s.selectionMap).map((id) => s.fileMap[id]).filter(Boolean);
+  const tfId = s.contextMenuConfig?.triggerFileId ?? null;
+  const triggerFile = tfId ? s.fileMap[tfId] ?? null : null;
+
+  if (action.target) {
+    const targetFilter = action.target.filter;
+    let targetFiles: FileData[] = [];
+    if (action.target.source === "selection") targetFiles = selectedFiles;
+    else if (action.target.source === "context-item") targetFiles = triggerFile ? [triggerFile] : [];
+    else if (action.target.source === "selection-or-context-item") targetFiles = selectedFiles.length > 0 ? selectedFiles : (triggerFile ? [triggerFile] : []);
+    const selectedFilesForAction = targetFilter ? targetFiles.filter(targetFilter) : targetFiles;
+    return { selectedFiles, selectedFilesForAction, triggerFile, targetMin: action.target.min, targetMax: action.target.max };
+  }
+  return { selectedFiles, selectedFilesForAction: selectedFiles, triggerFile, targetMin: undefined as number | undefined, targetMax: undefined as number | undefined };
+};
+
+const runActionSteps = (action: FileAction, actions: FbActions) => {
+  const steps = action.steps;
+  if (!steps?.length) return;
+  for (const step of steps) {
+    if (step.type === "set-view") actions.setFileViewConfig(step.config);
+    else if (step.type === "toggle-option") {
+      if (step.defaultValue !== undefined) actions.setOptionDefaults({ [step.optionId]: step.defaultValue });
+      actions.toggleOption(step.optionId);
+    } else if (step.type === "sort") {
+      actions.activateSortAction(step.actionId ?? action.id, step.defaultOrder === "DESC" ? SortOrder.DESC : SortOrder.ASC);
+    } else if (step.type === "transform-selection") {
+      actions.applySelectionTransform(step.transform);
+    }
+  }
 };
 
 // ============================================================
@@ -331,7 +375,7 @@ export const createFbStore = (instanceId: string) => {
             items.push(g); seen[name] = g; return g;
           };
           for (const a of fileActions) {
-            const btn = a.button; if (!btn) continue;
+            const btn = getActionUi(a); if (!btn) continue;
             if (btn.toolbar && !excluded.has(a.id)) { if (btn.group) getGroup(tbG, seenTb, btn.group).fileActionIds.push(a.id); else tb.push(a.id); }
             if (btn.contextMenu) { if (btn.group) getGroup(ctx, seenCtx, btn.group).fileActionIds.push(a.id); else ctx.push(a.id); }
           }
@@ -349,9 +393,17 @@ export const createFbStore = (instanceId: string) => {
           else if (disableEssential) essentials = []; else essentials = [...EssentialFileActions];
           let fas = mergeActions(sanitizedArray, essentials, defaults);
           const opts: OptionMap = {};
-          for (const a of fas) if (a.option) opts[a.option.id] = a.option.defaultValue;
+          for (const a of fas) {
+            for (const step of a.steps ?? []) {
+              if (step.type === "toggle-option" && step.defaultValue !== undefined) opts[step.optionId] = step.defaultValue;
+            }
+          }
           if (breakpoint) {
-            fas = fas.map((a) => a.button && a.breakPointsOverrides?.[breakpoint] ? { ...a, button: { ...a.button, ...a.breakPointsOverrides[breakpoint] } } : a);
+            fas = fas.map((a) => {
+              const btn = getActionUi(a);
+              if (!btn || !a.breakPointsOverrides?.[breakpoint]) return a;
+              return { ...a, ui: { ...btn, ...a.breakPointsOverrides[breakpoint] } };
+            });
           }
           const store = get().actions;
           store.setRawFileActions(raw); store.setFileActionsErrorMessages(errorMessages);
@@ -360,19 +412,19 @@ export const createFbStore = (instanceId: string) => {
 
         updateDefaultFileViewActionId(id) {
           const action = id ? get().state.fileActionMap[id] : null;
-          if (action?.fileViewConfig) get().actions.setFileViewConfig(action.fileViewConfig);
+          const step = action?.steps?.find((s) => s.type === "set-view");
+          if (step && step.type === "set-view") get().actions.setFileViewConfig(step.config);
         },
 
         activateSortAction(id, defaultOrder) {
           if (!id) return; const s = get().state; const a = s.fileActionMap[id];
-          if (!a?.sortKeySelector) return;
+          if (!getSortSelector(a)) return;
           get().actions.setSort({ actionId: id, order: s.sortActionId === id ? (s.sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC) : defaultOrder ?? SortOrder.ASC });
         },
 
-        applySelectionTransform(action) {
-          if (!action.selectionTransform) return;
+        applySelectionTransform(transform) {
           const s = get().state;
-          const result = action.selectionTransform({
+          const result = transform({
             prevSelection: new Set(Object.keys(s.selectionMap)),
             fileIds: s.cleanFileIds, fileMap: s.fileMap,
             hiddenFileIds: new Set(Object.keys(s.hiddenFileIdMap)),
@@ -387,31 +439,27 @@ export const createFbStore = (instanceId: string) => {
           const a = get().actions;
           if (!s.fileActionMap[action.id]) Logger.warn(`Action "${action.id}" requested but not registered.`);
 
-          const selectedFiles = Object.keys(s.selectionMap).map((id) => s.fileMap[id]);
-          const tfId = s.contextMenuConfig?.triggerFileId ?? null;
-          const triggerFile = tfId ? s.fileMap[tfId] ?? null : null;
-          const fallbackSelection = triggerFile ? [triggerFile] : [];
-          const effectiveSelection = selectedFiles.length === 0 ? fallbackSelection : selectedFiles;
-          const sfa = action.fileFilter ? effectiveSelection.filter(action.fileFilter) : effectiveSelection;
-          if (action.requiresSelection && sfa.length === 0) { Logger.warn(`Action "${action.id}" requires selection but none found.`); return; }
+          const { selectedFiles, selectedFilesForAction, triggerFile, targetMin, targetMax } = resolveActionSelection(action, s);
+          if (action.target && selectedFilesForAction.length === 0 && (action.target.min ?? 0) > 0) { Logger.warn(`Action "${action.id}" requires selection but none found.`); return; }
+          if (targetMin !== undefined && selectedFilesForAction.length < targetMin) { Logger.warn(`Action "${action.id}" requires at least ${targetMin} target file(s).`); return; }
+          if (targetMax !== undefined && selectedFilesForAction.length > targetMax) { Logger.warn(`Action "${action.id}" supports at most ${targetMax} target file(s).`); return; }
 
           const actionState: FileActionState<{}> = {
-            instanceId: s.instanceId, selectedFiles, selectedFilesForAction: sfa,
+            instanceId: s.instanceId, selectedFiles, selectedFilesForAction,
             contextMenuTriggerFile: triggerFile,
           };
 
-          if (action.sortKeySelector) a.activateSortAction(action.id);
-          if (action.fileViewConfig) a.setFileViewConfig(action.fileViewConfig);
-          if (action.option) a.toggleOption(action.option.id);
-          if (action.selectionTransform) a.applySelectionTransform(action);
+          runActionSteps(action, a);
 
           const effect = action.effect;
           const promise: any = effect
             ? effect({ action, payload, state: actionState, getState: () => ({ ...get().state }), getStore: () => storeApi })
             : undefined;
 
+          const dispatchMode = action.dispatch ?? "external";
           const dispatch = (prevented?: boolean) => {
             if (prevented) return;
+            if (dispatchMode === "internal-only") return;
             const handler = get().state.externalFileActionHandler;
             if (handler) {
               Promise.resolve(handler({ id: action.id, action, payload, state: actionState }))

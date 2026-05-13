@@ -63,32 +63,33 @@ export const useLocalizedFileActionStrings = (
   return useMemo(() => {
     if (!action) {
       return {
-        buttonName: "",
-        buttonTooltip: undefined,
+        actionName: "",
+        actionTooltip: undefined,
       };
     }
 
+    const ui = action.ui;
     const nameKey = getActionI18nId(action.id, "button.name");
-    let buttonName: string;
+    let actionName: string;
     try {
-      buttonName = stringFormatter.format(nameKey);
+      actionName = stringFormatter.format(nameKey);
     } catch {
-      buttonName = action.button?.name ?? "";
+      actionName = ui?.name ?? "";
     }
 
-    let buttonTooltip: Undefinable<string> = undefined;
-    if (action.button?.tooltip) {
+    let actionTooltip: Undefinable<string> = undefined;
+    if (ui?.tooltip) {
       const tooltipKey = getActionI18nId(action.id, "button.tooltip");
       try {
-        buttonTooltip = stringFormatter.format(tooltipKey);
+        actionTooltip = stringFormatter.format(tooltipKey);
       } catch {
-        buttonTooltip = action.button?.tooltip;
+        actionTooltip = ui?.tooltip;
       }
     }
 
     return {
-      buttonName,
-      buttonTooltip,
+      actionName,
+      actionTooltip,
     };
   }, [action, stringFormatter]);
 };

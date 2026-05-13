@@ -62,7 +62,7 @@ export const EssentialActions = {
     {
       id: "open_parent_folder",
       hotkeys: ["backspace"],
-      button: {
+      ui: {
         name: "Go up a directory",
         toolbar: true,
         contextMenu: false,
@@ -99,7 +99,7 @@ export const EssentialActions = {
   SelectMode: defineFileAction(
     {
       id: "select_mode",
-      button: {
+      ui: {
         name: "Select mode",
         toolbar: true,
         icon: FbIconName.select,

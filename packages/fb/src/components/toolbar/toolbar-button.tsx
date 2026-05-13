@@ -76,11 +76,11 @@ export const SmartToolbarButton = memo(
     const action = useFbStore(useShallow((s) => s.state.fileActionMap[fileActionId]));
     const triggerAction = useFileActionTrigger(fileActionId);
     const { icon, active, disabled } = useFileActionProps(fileActionId);
-    const { buttonName, buttonTooltip } = useLocalizedFileActionStrings(action);
+    const { actionName, actionTooltip } = useLocalizedFileActionStrings(action);
 
     if (!action) return null;
-    const { button } = action;
-    if (!button) return null;
+    const actionUi = action.ui;
+    if (!actionUi) return null;
     if (
       action.customVisibility !== undefined &&
       action.customVisibility() === CustomVisibilityState.Hidden
@@ -89,10 +89,10 @@ export const SmartToolbarButton = memo(
 
     return (
       <ToolbarButton
-        text={buttonName}
-        tooltip={buttonTooltip}
+        text={actionName}
+        tooltip={actionTooltip}
         icon={icon}
-        iconOnly={button.iconOnly}
+        iconOnly={actionUi.iconOnly}
         active={active}
         {...props}
         onPress={triggerAction}
