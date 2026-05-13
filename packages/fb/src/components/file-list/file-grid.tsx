@@ -8,6 +8,7 @@ import {
   Size,
 } from "react-aria-components";
 import type { Selection } from "react-aria-components";
+import { ListBox } from "@heroui/react";
 
 import {
   selectFileViewConfig,
@@ -49,9 +50,9 @@ type FileGridItem = {
   index: number;
 };
 
-// ---- Single grid item renderer ----
+// ---- Content renderer (shared between list/grid paths) ----
 
-const FileGridItemRenderer = memo(
+const FileItemContent = memo(
   ({
     fileId,
     viewMode,
@@ -62,26 +63,16 @@ const FileGridItemRenderer = memo(
     const file = useParamSelector(selectFileDataById, fileId);
     const selected = useParamSelector(selectIsFileSelected, fileId);
 
-    const textValue = file?.name ?? "Loading...";
-
-    return (
-      <StyledGridListItem
-        id={fileId ?? undefined}
-        textValue={textValue}
-        isCard={viewMode !== FileViewMode.List}
-      >
-        {viewMode === FileViewMode.List ? (
-          <ListEntry file={file} selected={selected} />
-        ) : viewMode === FileViewMode.Grid ? (
-          <GridEntry file={file} selected={selected} />
-        ) : (
-          <TileEntry file={file} selected={selected} />
-        )}
-      </StyledGridListItem>
-    );
+    if (viewMode === FileViewMode.List) {
+      return <ListEntry file={file} selected={selected} />;
+    }
+    if (viewMode === FileViewMode.Grid) {
+      return <GridEntry file={file} selected={selected} />;
+    }
+    return <TileEntry file={file} selected={selected} />;
   },
 );
-FileGridItemRenderer.displayName = "FileGridItemRenderer";
+FileItemContent.displayName = "FileItemContent";
 
 // ---- Main FileGrid component ----
 
@@ -146,24 +137,13 @@ export const FileGrid = memo(() => {
     [dispatch, displayFileIds, fileMap],
   );
 
-  // Layout config: Virtualizer layout class + options
-  const isList = viewMode === FileViewMode.List;
-  const LayoutClass = isList ? ListLayout : GridLayout;
-  const layoutOptions = useMemo(
-    () =>
-      isList
-        ? { estimatedRowSize: 56, gap: 2 }
-        : {
-            minItemSize: new Size(
-              viewMode === FileViewMode.Grid ? 180 : 200,
-              180,
-            ),
-            maxColumns: 12,
-            minSpace: new Size(8, 8),
-          },
-    [isList, viewMode],
+  // Get textValue for an item (for accessibility/typeahead)
+  const getTextValue = useCallback(
+    (item: FileGridItem) => fileMap[item.id]?.name ?? "Loading...",
+    [fileMap],
   );
-  const gridListLayout = isList ? "stack" : "grid";
+
+  const isList = viewMode === FileViewMode.List;
 
   // Empty state
   if (items.length === 0) {
@@ -174,25 +154,71 @@ export const FileGrid = memo(() => {
     );
   }
 
+  // ---- List view: HeroUI ListBox + Virtualizer ListLayout ----
+  if (isList) {
+    return (
+      <div className="size-full pl-2 pb-2 rounded-b-3xl">
+        <Virtualizer layout={ListLayout} layoutOptions={{ estimatedRowSize: 56 }}>
+          <ListBox
+            aria-label="File browser"
+            selectionMode="multiple"
+            selectedKeys={selectedKeys}
+            onSelectionChange={handleSelectionChange}
+            onAction={handleAction}
+            items={items}
+            className="size-full"
+            style={{ minHeight: "100%", display: "block" }}
+          >
+            {(item: FileGridItem) => (
+              <ListBox.Item
+                key={item.id}
+                id={item.id}
+                textValue={getTextValue(item)}
+              >
+                <FileItemContent fileId={item.id} viewMode={viewMode} />
+              </ListBox.Item>
+            )}
+          </ListBox>
+        </Virtualizer>
+      </div>
+    );
+  }
+
+  // ---- Grid / Tile view: GridList + Virtualizer GridLayout ----
+  const gridLayoutOptions = useMemo(
+    () => ({
+      minItemSize: new Size(
+        viewMode === FileViewMode.Grid ? 180 : 200,
+        180,
+      ),
+      maxColumns: 12,
+      minSpace: new Size(8, 8),
+    }),
+    [viewMode],
+  );
+
   return (
     <div className="size-full pl-2 pb-2 rounded-b-3xl">
-      <Virtualizer layout={LayoutClass} layoutOptions={layoutOptions}>
+      <Virtualizer layout={GridLayout} layoutOptions={gridLayoutOptions}>
         <StyledGridList
           aria-label="File browser"
           selectionMode="multiple"
           selectedKeys={selectedKeys}
           onSelectionChange={handleSelectionChange}
           onAction={handleAction}
-          layout={gridListLayout}
+          layout="grid"
           items={items}
           style={{ minHeight: "100%", display: "block" }}
         >
           {(item: FileGridItem) => (
-            <FileGridItemRenderer
+            <StyledGridListItem
               key={item.id}
-              fileId={item.id}
-              viewMode={viewMode}
-            />
+              id={item.id}
+              textValue={getTextValue(item)}
+              isCard
+            >
+              <FileItemContent fileId={item.id} viewMode={viewMode} />
+            </StyledGridListItem>
           )}
         </StyledGridList>
       </Virtualizer>
