@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useFbStore } from "@/store/store";
+import { useFbStore } from "../../store/store";
 import { SmartToolbarButton } from "./toolbar-button";
 import { ToolbarDropdown } from "./toolbar-dropdown";
 import { ToolbarInfo } from "./toolbar-info";

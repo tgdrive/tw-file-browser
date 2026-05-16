@@ -1,6 +1,6 @@
-import { Nullable } from "@/util/utils";
+import { Nullable } from "./utils";
 
-import { FileData } from "@/types/file.types";
+import { FileData } from "../types/file.types";
 import { Logger } from "./logger";
 
 export class FileHelper {

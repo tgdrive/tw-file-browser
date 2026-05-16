@@ -1,5 +1,5 @@
-import { FbActions } from "@/action-definitions/index";
-import { FileBrowserProps } from "@/types/file-browser.types";
+import { FbActions } from "../action-definitions/index";
+import { FileBrowserProps } from "../types/file-browser.types";
 import { FbIconName, SortOrder } from "./enums";
 
 export type FbConfig = Pick<

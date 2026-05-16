@@ -1,8 +1,8 @@
-import { Nullable } from "@/util/utils";
+import { Nullable } from "./utils";
 
-import { FileAction } from "@/types/action.types";
-import { FileArray } from "@/types/file.types";
-import { Logger } from "@/util/logger";
+import { FileAction } from "../types/action.types";
+import { FileArray } from "../types/file.types";
+import { Logger } from "./logger";
 
 interface SanitizeFiles {
   (

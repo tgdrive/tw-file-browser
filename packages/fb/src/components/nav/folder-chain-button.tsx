@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 
-import { FbIconName } from "@/util/enums";
+import { FbIconName } from "../../util/enums";
 import { FolderChainItem } from "./file-navbar.hooks";
 import { ToolbarButton } from "../toolbar/toolbar-button";
 export interface FolderChainButtonProps {

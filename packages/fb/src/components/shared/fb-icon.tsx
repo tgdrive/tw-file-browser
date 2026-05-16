@@ -1,6 +1,6 @@
 import React from "react";
-import { FbIconName } from "@/util/enums";
-import type { FbIconProps } from "@/types/icons.types";
+import { FbIconName } from "../../util/enums";
+import type { FbIconProps } from "../../types/icons.types";
 import IconFaSolidCircleNotch from "~icons/fa-solid/circle-notch";
 import IconFaSolidShareAlt from "~icons/fa-solid/share-alt";
 import IconFaSolidObjectGroup from "~icons/fa-solid/object-group";

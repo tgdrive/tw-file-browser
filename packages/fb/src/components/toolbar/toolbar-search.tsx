@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalizedStringFormatter } from "@react-aria/i18n";
 
-import { useDebounce } from "@/util/hooks-helpers";
-import { getI18nId, I18nNamespace } from "@/util/i18n";
-import { useFbStore, useFbStoreApi } from "@/store/store";
+import { useDebounce } from "../../util/hooks-helpers";
+import { getI18nId, I18nNamespace } from "../../util/i18n";
+import { useFbStore, useFbStoreApi } from "../../store/store";
 
 const searchMessages: Record<string, Record<string, string>> = {
   en: {

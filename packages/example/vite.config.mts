@@ -12,7 +12,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "file-browser": new URL("../fb/src/index.ts", import.meta.url).pathname,
-      "@": new URL("../fb/src", import.meta.url).pathname,
     },
   },
 });

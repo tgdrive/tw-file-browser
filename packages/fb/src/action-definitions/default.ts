@@ -1,7 +1,7 @@
-import type { FileSelectionTransform } from "@/types/action.types";
-import { defineFileAction } from "@/util/helpers";
-import { FbIconName, FileViewMode } from "@/util/enums";
-import { FileHelper } from "@/util/file-helper";
+import type { FileSelectionTransform } from "../types/action.types";
+import { defineFileAction } from "../util/helpers";
+import { FbIconName, FileViewMode } from "../util/enums";
+import { FileHelper } from "../util/file-helper";
 import { EssentialActions } from "./essential";
 
 export const DefaultActions = {

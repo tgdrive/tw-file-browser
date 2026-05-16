@@ -1,8 +1,8 @@
 import React from "react";
 import { useLocalizedStringFormatter } from "@react-aria/i18n";
 
-import { FbIconName } from "@/util/enums";
-import { getI18nId, I18nNamespace } from "@/util/i18n";
+import { FbIconName } from "../../util/enums";
+import { getI18nId, I18nNamespace } from "../../util/i18n";
 import { FbIcon } from "../shared/fb-icon";
 
 const emptyMessages: Record<string, Record<string, string>> = {

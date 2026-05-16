@@ -1,13 +1,13 @@
 import React, { type ReactElement, useMemo } from "react";
 
-import { FbActions } from "@/action-definitions/index";
+import { FbActions } from "../../action-definitions/index";
 import { useFolderChainItems } from "./file-navbar.hooks";
 
 import { FolderChainButton } from "./folder-chain-button";
 
 import { SmartToolbarButton } from "../toolbar/toolbar-button";
 import { Breadcrumbs } from "@heroui/react";
-import type { Nilable } from "@/util/utils";
+import type { Nilable } from "../../util/utils";
 import clsx from "clsx";
 
 interface FileNavbarProps {

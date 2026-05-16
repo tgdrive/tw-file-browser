@@ -1,11 +1,11 @@
 import React from "react";
 
-import { FileEntryProps } from "@/types/file-list.types";
-import { FileHelper } from "@/util/file-helper";
+import { FileEntryProps } from "../../types/file-list.types";
+import { FileHelper } from "../../util/file-helper";
 import { useFileEntryHtmlProps, useFileEntryState } from "./file-entry.hooks";
 import { FileEntryName } from "./file-entry-name";
 import { GridEntryPreview } from "./grid-entry-preview";
-import { useLocalizedFileEntryStrings } from "@/util/i18n";
+import { useLocalizedFileEntryStrings } from "../../util/i18n";
 
 export const GridEntry = React.memo(({ file, selected }: FileEntryProps) => {
 	const isDir = FileHelper.isDirectory(file);

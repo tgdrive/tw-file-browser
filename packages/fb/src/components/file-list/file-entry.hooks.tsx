@@ -4,15 +4,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Nullable } from "@/util/utils";
+import { Nullable } from "../../util/utils";
 
-import { useFbStore } from "@/store/store";
-import { FileData } from "@/types/file.types";
-import { FbIconName } from "@/util/enums";
-import { FileHelper } from "@/util/file-helper";
-import { ColorsLight, useIconData } from "@/util/icon-helper";
-import { Logger } from "@/util/logger";
-import { FbIcon } from "@/components/shared/fb-icon";
+import { useFbStore } from "../../store/store";
+import { FileData } from "../../types/file.types";
+import { FbIconName } from "../../util/enums";
+import { FileHelper } from "../../util/file-helper";
+import { ColorsLight, useIconData } from "../../util/icon-helper";
+import { Logger } from "../../util/logger";
+import { FbIcon } from "../shared/fb-icon";
 
 export type FileEntryState = {
   childrenCount: Nullable<number>;

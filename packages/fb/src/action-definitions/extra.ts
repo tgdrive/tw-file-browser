@@ -1,5 +1,5 @@
-import { FbIconName } from "@/util/enums";
-import { defineFileAction } from "@/util/helpers";
+import { FbIconName } from "../util/enums";
+import { defineFileAction } from "../util/helpers";
 import { EssentialActions } from "./essential";
 
 export const ExtraActions = {

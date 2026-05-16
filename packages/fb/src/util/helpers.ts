@@ -1,7 +1,7 @@
 // Used in React hooks to indicate empty deps are intentional.
-import { MaybePromise, Nullable, WritableProps } from "@/util/utils";
+import { MaybePromise, Nullable, WritableProps } from "./utils";
 
-import { FileAction, FileActionEffect } from "@/types/action.types";
+import { FileAction, FileActionEffect } from "../types/action.types";
 import { Logger } from "./logger";
 
 export const NOOP_FUNCTION = (...args: any[]) => {

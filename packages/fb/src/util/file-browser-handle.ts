@@ -1,8 +1,8 @@
 import React, { useImperativeHandle } from "react";
 
-import { useFbStoreApi } from "@/store/store";
-import { FileAction } from "@/types/action.types";
-import { FileBrowserHandle } from "@/types/file-browser.types";
+import { useFbStoreApi } from "../store/store";
+import { FileAction } from "../types/action.types";
+import { FileBrowserHandle } from "../types/file-browser.types";
 
 export const useFileBrowserHandle = (ref: React.Ref<FileBrowserHandle>) => {
   const storeApi = useFbStoreApi();

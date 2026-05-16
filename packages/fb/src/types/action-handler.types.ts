@@ -1,4 +1,4 @@
-import { AnyObject, Nullable } from "@/util/utils";
+import { AnyObject, Nullable } from "../util/utils";
 
 import { FileAction } from "./action.types";
 import { FileData } from "./file.types";

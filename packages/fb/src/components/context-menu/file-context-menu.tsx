@@ -1,10 +1,10 @@
 import React, { memo, useEffect, useMemo } from "react";
 
-import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
+import { useFbStore, useFbStoreApi, useShallow } from "../../store/store";
 import { useContextMenuDismisser } from "./file-context-menu.hooks";
 import { Dropdown, Label, Kbd } from "@heroui/react";
-import { useFileActionProps } from "@/util/file-actions";
-import { useLocalizedFileActionStrings } from "@/util/i18n";
+import { useFileActionProps } from "../../util/file-actions";
+import { useLocalizedFileActionStrings } from "../../util/i18n";
 import { FbIcon } from "../shared/fb-icon";
 
 const ContextMenuItemContent = memo(

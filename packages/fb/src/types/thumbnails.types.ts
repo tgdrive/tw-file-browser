@@ -1,4 +1,4 @@
-import { Nilable } from "@/util/utils";
+import { Nilable } from "../util/utils";
 
 import { FileData } from "./file.types";
 

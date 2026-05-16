@@ -3,8 +3,8 @@ import React from "react";
 import type {
 	FileBrowserHandle,
 	FileBrowserProps,
-} from "@/types/file-browser.types";
-import { FileList } from "@/components/file-list/file-list";
+} from "../../types/file-browser.types";
+import { FileList } from "../file-list/file-list";
 import { FileBrowser } from "./file-browser";
 import { FileNavbar } from "../nav/file-navbar";
 import { FileToolbar } from "../toolbar/file-toolbar";

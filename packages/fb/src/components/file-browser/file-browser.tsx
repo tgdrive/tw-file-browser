@@ -1,15 +1,15 @@
 import React, { type ReactNode, useMemo } from "react";
 import { I18nProvider } from "@react-aria/i18n";
 import shortid from "shortid";
-import { FbStoreProvider } from "@/store/store";
+import { FbStoreProvider } from "../../store/store";
 import type {
   FileBrowserHandle,
   FileBrowserProps,
-} from "@/types/file-browser.types";
-import { defaultConfig } from "@/util/default-config";
-import { getValueOrFallback } from "@/util/helpers";
-import { useStaticValue } from "@/util/hooks-helpers";
-import { FbFormattersContext, defaultFormatters } from "@/util/i18n";
+} from "../../types/file-browser.types";
+import { defaultConfig } from "../../util/default-config";
+import { getValueOrFallback } from "../../util/helpers";
+import { useStaticValue } from "../../util/hooks-helpers";
+import { FbFormattersContext, defaultFormatters } from "../../util/i18n";
 import { FbBusinessLogic } from "./fb-business-logic";
 import { FbPresentationLayer } from "./fb-presentation-layer";
 

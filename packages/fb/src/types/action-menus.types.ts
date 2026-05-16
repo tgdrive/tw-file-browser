@@ -1,5 +1,5 @@
-import { Nullable } from "@/util/utils";
-import { FbIconName } from "@/util/enums";
+import { Nullable } from "../util/utils";
+import { FbIconName } from "../util/enums";
 
 export interface FileActionGroup {
   name: string;

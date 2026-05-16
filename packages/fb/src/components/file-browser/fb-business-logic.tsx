@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import deepmerge from "deepmerge";
-import { useFbStoreApi } from "@/store/store";
-import type { FileBrowserHandle, FileBrowserProps } from "@/types/file-browser.types";
-import { defaultConfig } from "@/util/default-config";
-import { getValueOrFallback } from "@/util/helpers";
-import { useFileBrowserHandle } from "@/util/file-browser-handle";
+import { useFbStoreApi } from "../../store/store";
+import type { FileBrowserHandle, FileBrowserProps } from "../../types/file-browser.types";
+import { defaultConfig } from "../../util/default-config";
+import { getValueOrFallback } from "../../util/helpers";
+import { useFileBrowserHandle } from "../../util/file-browser-handle";
 
 const useStoreEffect = (action: (api: ReturnType<typeof useFbStoreApi>) => void, deps: any[]) => {
   const store = useFbStoreApi();

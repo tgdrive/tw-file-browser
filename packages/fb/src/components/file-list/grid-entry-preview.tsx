@@ -1,6 +1,6 @@
 import React from "react";
-import { Nullable } from "@/util/utils";
-import { FbIconName } from "@/util/enums";
+import { Nullable } from "../../util/utils";
+import { FbIconName } from "../../util/enums";
 import { FileThumbnail } from "./file-thumbnail";
 import { FbIcon } from "../shared/fb-icon";
 import clsx from "clsx";

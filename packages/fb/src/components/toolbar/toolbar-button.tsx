@@ -1,10 +1,10 @@
 import React, { memo } from "react";
-import type { Nullable } from "@/util/utils";
+import type { Nullable } from "../../util/utils";
 
-import { FbIconName, CustomVisibilityState } from "@/util/enums";
-import { useFbStore, useShallow } from "@/store/store";
-import { useFileActionProps, useFileActionTrigger } from "@/util/file-actions";
-import { useLocalizedFileActionStrings } from "@/util/i18n";
+import { FbIconName, CustomVisibilityState } from "../../util/enums";
+import { useFbStore, useShallow } from "../../store/store";
+import { useFileActionProps, useFileActionTrigger } from "../../util/file-actions";
+import { useLocalizedFileActionStrings } from "../../util/i18n";
 import { Button, type ButtonProps } from "@heroui/react";
 import { FbIcon } from "../shared/fb-icon";
 import clsx from "clsx";

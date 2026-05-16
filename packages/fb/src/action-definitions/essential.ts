@@ -1,10 +1,10 @@
 import type {
   ChangeSelectionPayload, MoveFilesPayload,
   OpenFileContextMenuPayload, OpenFilesPayload, MouseClickFilePayload,
-} from "@/types/action-payloads.types";
-import { FileHelper } from "@/util/file-helper";
-import { defineFileAction } from "@/util/helpers";
-import { FbIconName } from "@/util/enums";
+} from "../types/action-payloads.types";
+import { FileHelper } from "../util/file-helper";
+import { defineFileAction } from "../util/helpers";
+import { FbIconName } from "../util/enums";
 import { FbActions } from "./index";
 
 export const EssentialActions = {

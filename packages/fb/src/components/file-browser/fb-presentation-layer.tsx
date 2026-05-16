@@ -4,9 +4,9 @@ import {
   useKeyboard,
 } from "@react-aria/interactions";
 
-import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
-import { elementIsInsideButton } from "@/util/helpers";
-import { useContextMenuTrigger } from "@/components/context-menu/file-context-menu.hooks";
+import { useFbStore, useFbStoreApi, useShallow } from "../../store/store";
+import { elementIsInsideButton } from "../../util/helpers";
+import { useContextMenuTrigger } from "../context-menu/file-context-menu.hooks";
 import React from "react";
 
 export interface FbPresentationLayerProps {

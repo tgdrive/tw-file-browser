@@ -1,7 +1,7 @@
 import React from "react";
 
-import { FileEntryProps } from "@/types/file-list.types";
-import { useLocalizedFileEntryStrings } from "@/util/i18n";
+import { FileEntryProps } from "../../types/file-list.types";
+import { useLocalizedFileEntryStrings } from "../../util/i18n";
 import {
 	FileEntryState,
 	useFileEntryHtmlProps,
@@ -9,7 +9,7 @@ import {
 } from "./file-entry.hooks";
 import { FileEntryName } from "./file-entry-name";
 import { FbIcon } from "../shared/fb-icon";
-import { FileHelper } from "@/util/file-helper";
+import { FileHelper } from "../../util/file-helper";
 import clsx from "clsx";
 
 export const ListEntry = React.memo(({ file, selected }: FileEntryProps) => {

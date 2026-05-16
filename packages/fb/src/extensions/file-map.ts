@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { FbActions } from "@/action-definitions";
-import { FileActionData } from "@/types/action-handler.types";
-import { FileAction } from "@/types/action.types";
-import { FileArray, FileData } from "@/types/file.types";
-import { FileHelper } from "@/util/file-helper";
+import { FbActions } from "../action-definitions";
+import { FileActionData } from "../types/action-handler.types";
+import { FileAction } from "../types/action.types";
+import { FileArray, FileData } from "../types/file.types";
+import { FileHelper } from "../util/file-helper";
 
 export interface CustomFileData extends FileData {
   parentId?: string;

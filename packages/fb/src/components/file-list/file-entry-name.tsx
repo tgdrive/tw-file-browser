@@ -1,7 +1,7 @@
 import React from "react";
-import { Nullable } from "@/util/utils";
+import { Nullable } from "../../util/utils";
 
-import { FileData } from "@/types/file.types";
+import { FileData } from "../../types/file.types";
 import {
   useFileNameComponent,
   useModifierIconComponents,

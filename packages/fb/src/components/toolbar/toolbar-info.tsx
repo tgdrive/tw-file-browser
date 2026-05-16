@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import { useFbStore, useFbStoreApi } from "@/store/store";
-import { FbIconName } from "@/util/enums";
+import { useFbStore, useFbStoreApi } from "../../store/store";
+import { FbIconName } from "../../util/enums";
 import { Button } from "@heroui/react";
 import { FbIcon } from "../shared/fb-icon";
 import clsx from "clsx";

@@ -9,11 +9,11 @@ import {
 import type { Selection } from "react-aria-components";
 import { ListBox } from "@heroui/react";
 
-import { FbActions } from "@/action-definitions/index";
-import { FileViewMode } from "@/util/enums";
-import type { Nullable } from "@/util/utils";
-import type { FileData } from "@/types/file.types";
-import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
+import { FbActions } from "../../action-definitions/index";
+import { FileViewMode } from "../../util/enums";
+import type { Nullable } from "../../util/utils";
+import type { FileData } from "../../types/file.types";
+import { useFbStore, useFbStoreApi, useShallow } from "../../store/store";
 
 import { GridEntry } from "./grid-entry";
 import { ListEntry } from "./list-entry";

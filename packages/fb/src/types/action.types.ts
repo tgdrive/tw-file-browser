@@ -1,12 +1,12 @@
-import { MaybePromise, Nullable } from "@/util/utils";
+import { MaybePromise, Nullable } from "../util/utils";
 
 import { FileActionState } from "./action-handler.types";
 import { FileViewConfig } from "./file-view.types";
 import { FileFilter, FileMap } from "./file.types";
 import { FileSortKeySelector } from "./sort.types";
-import type { FbIconName, CustomVisibilityState } from "@/util/enums";
+import type { FbIconName, CustomVisibilityState } from "../util/enums";
 import type { StoreApi } from "zustand";
-import type { FbState, FbStore } from "@/store/store";
+import type { FbState, FbStore } from "../store/store";
 export interface FileAction {
   /**
    * Unique file action ID. If you set the action ID to one of the built-in Fb

@@ -1,12 +1,12 @@
 import React, { memo, Key, useCallback, useState } from "react";
-import { FileActionGroup } from "@/types/action-menus.types";
+import { FileActionGroup } from "../../types/action-menus.types";
 import { ToolbarButton, type ToolbarButtonProps } from "./toolbar-button";
 import { Dropdown, Label } from "@heroui/react";
 import { FbIcon } from "../shared/fb-icon";
-import { useFileActionProps } from "@/util/file-actions";
-import { useLocalizedFileActionStrings } from "@/util/i18n";
-import { useLocalizedFileActionGroup } from "@/util/i18n";
-import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
+import { useFileActionProps } from "../../util/file-actions";
+import { useLocalizedFileActionStrings } from "../../util/i18n";
+import { useLocalizedFileActionGroup } from "../../util/i18n";
+import { useFbStore, useFbStoreApi, useShallow } from "../../store/store";
 
 export type ToolbarDropdownProps = FileActionGroup;
 

@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import type { Nullable } from "@/util/utils";
+import type { Nullable } from "../../util/utils";
 
-import { FbActions } from "@/action-definitions/index";
-import { useFbStore, useFbStoreApi } from "@/store/store";
-import type { FileData } from "@/types/file.types";
-import { FileHelper } from "@/util/file-helper";
+import { FbActions } from "../../action-definitions/index";
+import { useFbStore, useFbStoreApi } from "../../store/store";
+import type { FileData } from "../../types/file.types";
+import { FileHelper } from "../../util/file-helper";
 
 export interface FolderChainItem {
 	file: Nullable<FileData>;

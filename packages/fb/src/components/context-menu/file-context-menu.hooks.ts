@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useFbStore, useFbStoreApi } from "@/store/store";
-import { FbActions } from "@/action-definitions/index";
+import { useFbStore, useFbStoreApi } from "../../store/store";
+import { FbActions } from "../../action-definitions/index";
 
 export const useContextMenuTrigger = () => {
   const contextMenuMounted = useFbStore((s) => s.state.contextMenuMounted);

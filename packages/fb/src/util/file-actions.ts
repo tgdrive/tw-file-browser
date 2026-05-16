@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from "react";
-import { Nullable } from "@/util/utils";
+import { Nullable } from "./utils";
 
-import { FbActions } from "@/action-definitions/index";
-import { useFbStore, useFbStoreApi, useShallow } from "@/store/store";
-import { FbIconName, CustomVisibilityState, SortOrder } from "@/util/enums";
+import { FbActions } from "../action-definitions/index";
+import { useFbStore, useFbStoreApi, useShallow } from "../store/store";
+import { FbIconName, CustomVisibilityState, SortOrder } from "./enums";
 import { FileHelper } from "./file-helper";
 
 const getActionUi = (action: any) => action?.ui;

@@ -4,11 +4,11 @@ import {
   useDateFormatter,
   useLocalizedStringFormatter,
 } from "@react-aria/i18n";
-import { Nullable, Undefinable } from "@/util/utils";
+import { Nullable, Undefinable } from "./utils";
 
-import { FileAction } from "@/types/action.types";
-import { FileData } from "@/types/file.types";
-import { FbFormatters } from "@/types/i18n.types";
+import { FileAction } from "../types/action.types";
+import { FileData } from "../types/file.types";
+import { FbFormatters } from "../types/i18n.types";
 import { FileHelper } from "./file-helper";
 
 export enum I18nNamespace {

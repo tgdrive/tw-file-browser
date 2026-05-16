@@ -1,11 +1,11 @@
-import { Nilable, Nullable } from "@/util/utils";
-import { FbActions } from "@/action-definitions/index";
+import { Nilable, Nullable } from "../util/utils";
+import { FbActions } from "../action-definitions/index";
 import { GenericFileActionHandler } from "./action-handler.types";
 import { FileAction } from "./action.types";
 import { FileArray } from "./file.types";
 import { I18nConfig } from "./i18n.types";
 import { ThumbnailGenerator } from "./thumbnails.types";
-import type { SortOrder } from "@/util/enums";
+import type { SortOrder } from "../util/enums";
 import { ActionGroup } from "./action-menus.types";
 
 /**
